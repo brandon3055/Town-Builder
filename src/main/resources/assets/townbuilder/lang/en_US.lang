@@ -1,0 +1,7 @@
+item.townbuilder:houseKey.name=House Key
+item.townbuilder:schematicTool.name=Schematic Tool
+
+tile.townbuilder:structureBuilder.name=Structure Builder
+
+msg.tolkienaddon.keySet.txt=Key bound to builder block
+msg.tolkienaddon.keyWrong.txt=§4Wrong Key!!!
