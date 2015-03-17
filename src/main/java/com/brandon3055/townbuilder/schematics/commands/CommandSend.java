@@ -3,6 +3,7 @@ package com.brandon3055.townbuilder.schematics.commands;
 import com.brandon3055.townbuilder.ConfigHandler;
 import com.brandon3055.townbuilder.TownBuilder;
 import com.brandon3055.townbuilder.network.PacketFileTransfer;
+import com.brandon3055.townbuilder.schematics.FileHandler;
 import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
@@ -28,12 +29,15 @@ public class CommandSend implements ISubCommand {
 	public void handleCommand(EntityPlayer player, String[] args) {
 		if (args.length == 2 && TownBuilder.proxy.isDedicatedServer() && player instanceof EntityPlayerMP)
 		{
-			if (SchematicHandler.loadCompoundFromFile(args[1]) != null)
+			if (SchematicHandler.getFile(args[1]) != null)
 			{
 				player.addChatComponentMessage(new ChatComponentText(args[1] + " Already exists on the server"));
 				return;
 			}
-			if (!TownBuilder.proxy.isTransferInProgress()) TownBuilder.network.sendTo(new PacketFileTransfer(args[1], true, ConfigHandler.filePort), (EntityPlayerMP) player);
+			if (!FileHandler.instance.transferInProgress) {
+				FileHandler.instance.fileName = args[1];
+				TownBuilder.network.sendTo(new PacketFileTransfer(args[1], true, ConfigHandler.filePort), (EntityPlayerMP) player);
+			}
 			else player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "The server is already receiving a file"));
 		}
 	}

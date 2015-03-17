@@ -2,12 +2,10 @@ package com.brandon3055.townbuilder.client;
 
 import com.brandon3055.townbuilder.CommonProxy;
 import com.brandon3055.townbuilder.client.rendering.RenderTileStructureBuilder;
-import com.brandon3055.townbuilder.schematics.FileSender;
 import com.brandon3055.townbuilder.tileentity.TileStructureBuilder;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.NetHandlerPlayServer;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -43,17 +41,7 @@ public class ClientProxy extends CommonProxy {
 	}
 
 	@Override
-	public void sendFile(String file, int port) {
-		FileSender.instance.sendFile(file, port);
-	}
+	public void registerServerListeners() {
 
-	@Override
-	public void receiveFile(String fileName, NetHandlerPlayServer netHandler) {
-
-	}
-
-	@Override
-	public boolean isTransferInProgress() {
-		return false;
 	}
 }

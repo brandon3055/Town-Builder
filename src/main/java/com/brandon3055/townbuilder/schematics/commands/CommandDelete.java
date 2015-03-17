@@ -30,7 +30,7 @@ public class CommandDelete implements ISubCommand
 			return;
 		}else
 		{
-			if (SchematicHandler.loadCompoundFromFile(args[1]) != null)
+			if (SchematicHandler.getFile(args[1]) != null)
 			{
 				SchematicHandler.deleteCompoundFile(args[1]);
 				player.addChatMessage(new ChatComponentText(args[1] + " Deleted"));

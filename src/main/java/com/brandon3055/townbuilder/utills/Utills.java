@@ -42,4 +42,8 @@ public class Utills {
 		return world.rayTraceBlocks(vec3, vec31);
 	}
 
+	public static String cutStringToLength(String s, int length)
+	{
+		return s.length() <= length ? s : s.substring(0, length);
+	}
 }

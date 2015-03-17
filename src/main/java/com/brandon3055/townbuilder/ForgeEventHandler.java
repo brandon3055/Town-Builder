@@ -42,6 +42,7 @@ public class ForgeEventHandler {
 				tool.getTagCompound().setInteger("Pos1Y", event.y);
 				tool.getTagCompound().setInteger("Pos1Z", event.z);
 			}
+
 			tool.getTagCompound().setInteger("Pos2X", event.x);
 			tool.getTagCompound().setInteger("Pos2Y", event.y);
 			tool.getTagCompound().setInteger("Pos2Z", event.z);

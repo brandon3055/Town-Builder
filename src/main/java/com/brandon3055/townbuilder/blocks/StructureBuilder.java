@@ -4,6 +4,8 @@ import com.brandon3055.townbuilder.ModItems;
 import com.brandon3055.townbuilder.TownBuilder;
 import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import com.brandon3055.townbuilder.tileentity.TileStructureBuilder;
+import com.brandon3055.townbuilder.utills.LogHelper;
+import com.brandon3055.townbuilder.utills.Utills;
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -15,7 +17,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -92,9 +93,10 @@ public class StructureBuilder extends Block {
 		{
 			if (stack.getTagCompound().getInteger("KeyCode") == tile.keyCode)
 			{
-				if (SchematicHandler.loadCompoundFromFile(tile.schematic) == null)
+				if (SchematicHandler.getFile(tile.schematic) == null)
 				{
 					player.addChatComponentMessage(new ChatComponentText("[Error - 404] Schematic {" + tile.schematic + "} not found!!!"));
+					LogHelper.info("[Error - 404] Schematic {" + tile.schematic + "} not found!!!");
 					return false;
 				}
 
@@ -105,17 +107,25 @@ public class StructureBuilder extends Block {
 
 				world.setBlock(x, y, z, Blocks.standing_sign);
 				TileEntitySign sign = world.getTileEntity(x, y, z) instanceof TileEntitySign ? (TileEntitySign) world.getTileEntity(x, y, z) : null;
+
 				if (sign != null)
 				{
-					sign.signText[0] = EnumChatFormatting.DARK_BLUE + "###############";
-					sign.signText[1] = EnumChatFormatting.DARK_RED + "Purchased By";
-					sign.signText[2] = EnumChatFormatting.DARK_GREEN + player.getCommandSenderName();
-					sign.signText[3] = EnumChatFormatting.DARK_BLUE + "###############";
+					sign.signText[0] = Utills.cutStringToLength("§1" + "################", 15);//"§1" + "#############";
+					sign.signText[1] = Utills.cutStringToLength("§4" + "Purchased By", 15);//"§4" + "Purchased By";
+					sign.signText[2] = Utills.cutStringToLength("§2" + player.getCommandSenderName(), 15);// + player.getCommandSenderName());//"§2" + "test";// + player.getCommandSenderName();
+					sign.signText[3] = Utills.cutStringToLength("§1" + "################", 15);//"§1" + "#############";
 				}
 
 				world.setBlockMetadataWithNotify(x, y, z, tile.signRotation, 2);
 
-				SchematicHandler.loadAreaFromCompound(SchematicHandler.loadCompoundFromFile(tile.schematic), player.worldObj, tile.xCoord + tile.xOffset, tile.yCoord + tile.yOffset, tile.zCoord + tile.zOffset, tile.copyAir);
+				try
+				{
+					SchematicHandler.loadAreaFromCompound(SchematicHandler.loadCompoundFromFile(tile.schematic), player.worldObj, tile.xCoord + tile.xOffset, tile.yCoord + tile.yOffset, tile.zCoord + tile.zOffset, tile.copyAir);
+				}
+				catch (SchematicHandler.SchematicException e)
+				{
+					e.printStackTrace();
+				}
 
 
 				return true;

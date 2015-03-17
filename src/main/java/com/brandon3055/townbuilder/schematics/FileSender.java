@@ -4,12 +4,15 @@ import com.brandon3055.townbuilder.utills.LogHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 /**
  * Created by Brandon on 25/02/2015.
@@ -21,18 +24,20 @@ public class FileSender
 	private SenderThread thread;
 	private String file = null;
 	private int port;
+	private NetHandlerPlayClient handlerPlayClient;
 
 	public FileSender()
 	{
 	}
 
 
-	public void sendFile(String file, int port)
+	public void sendFile(String file, int port, NetHandlerPlayClient handlerPlayClient)
 	{
 		if (this.thread != null && this.thread.getRunning()) {
 			Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "File transfer already in progress"));
 			return;
 		}
+		this.handlerPlayClient = handlerPlayClient;
 		this.thread = new SenderThread(this);
 		this.file = file;
 		this.thread.setRunning(true);
@@ -55,7 +60,6 @@ public class FileSender
 		@Override
 		public void run()
 		{
-			LogHelper.info("Thread run");
 			if (sender.file == null) return;
 			FileInputStream fis = null;
 			BufferedInputStream bis = null;
@@ -63,10 +67,14 @@ public class FileSender
 			ServerSocket servsock = null;
 			Socket sock = null;
 
-			LogHelper.info("Waiting for connection...");
+			LogHelper.info("Waiting for connection... [" + port + "]");
 			try
 			{
-				servsock = new ServerSocket(port);
+				//servsock = new ServerSocket(Minecraft.getMinecraft().getProxy());
+				servsock = new ServerSocket();
+				LogHelper.info("socket created " + sender.handlerPlayClient.getNetworkManager().channel().remoteAddress().toString());
+				SocketAddress addr = new InetSocketAddress(sender.handlerPlayClient.getNetworkManager().channel().remoteAddress().toString(), sender.port);
+				servsock.bind(addr);
 				sock = servsock.accept();
 				LogHelper.info("Accepted connection : " + sock);
 

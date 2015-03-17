@@ -6,13 +6,15 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.NetHandlerPlayServer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
 import java.io.*;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.Socket;
+import java.net.SocketAddress;
 
 /**
  * Created by Brandon on 25/02/2015.
@@ -23,7 +25,7 @@ public class FileReceiver
 	public static FileReceiver instance = new FileReceiver();
 	private ReceiverThread thread;
 	private EntityPlayer client;
-	private InetAddress clientAddress;
+	private SocketAddress clientAddress;
 	private String fileName;
 
 
@@ -34,7 +36,9 @@ public class FileReceiver
 			return;
 		}
 		this.client = netHandler.playerEntity;
-		this.clientAddress = ((InetSocketAddress)netHandler.func_147362_b().channel().remoteAddress()).getAddress();
+		this.clientAddress = netHandler.func_147362_b().channel().remoteAddress();
+		LogHelper.info("Receiving file from: " + this.clientAddress);
+		client.addChatComponentMessage(new ChatComponentText("Receiving file from: " + this.clientAddress));
 		this.fileName = fileName;
 		this.thread = new ReceiverThread(this);
 		this.thread.transferInProgress = true;
@@ -65,7 +69,20 @@ public class FileReceiver
 				FileOutputStream fos;
 				BufferedOutputStream bos;
 
-				socket = new Socket(receiver.clientAddress, ConfigHandler.filePort);
+				client.addChatComponentMessage(new ChatComponentText("Attempting to connect"));
+				LogHelper.info("Attempting to connect");
+
+				SocketAddress addr = new InetSocketAddress(MinecraftServer.getServer().getServerHostname(), ConfigHandler.filePort);
+				Proxy proxy = new Proxy(Proxy.Type.SOCKS, addr);
+
+				socket = new Socket(proxy);
+
+				LogHelper.info("socket created");
+				socket.connect(receiver.clientAddress);
+				//		new Socket(receiver.clientAddress, ConfigHandler.filePort); // ######## This is where it throws the exception ########
+
+				LogHelper.info("Connection established");
+				client.addChatComponentMessage(new ChatComponentText("Connection established"));
 
 				is = socket.getInputStream();
 				fos = new FileOutputStream(new File(SchematicHandler.getSaveFolder(), receiver.fileName + ".schematic"));

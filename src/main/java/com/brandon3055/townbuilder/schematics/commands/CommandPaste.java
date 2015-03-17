@@ -30,13 +30,20 @@ public class CommandPaste implements ISubCommand
 			return;
 		}else
 		{
-			if (SchematicHandler.loadCompoundFromFile(args[1]) == null)
+			if (SchematicHandler.getFile(args[1]) == null)
 			{
 				player.addChatMessage(new ChatComponentText(args[1] + " Dose not exist"));
 				return;
 			}else {
 				boolean ia = args.length == 3 && args[2].equals("-i");
-				SchematicHandler.loadAreaFromCompound(SchematicHandler.loadCompoundFromFile(args[1]), player.worldObj, (int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), !ia);
+				try
+				{
+					SchematicHandler.loadAreaFromCompound(SchematicHandler.loadCompoundFromFile(args[1]), player.worldObj, (int) Math.floor(player.posX), (int) Math.floor(player.posY), (int) Math.floor(player.posZ), !ia);
+				}
+				catch (SchematicHandler.SchematicException e)
+				{
+					e.printStackTrace();
+				}
 				player.addChatMessage(new ChatComponentText(args[1] + " Successfully added to world"));
 			}
 		}

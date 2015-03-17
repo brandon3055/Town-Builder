@@ -18,7 +18,7 @@ public class TownBuilder
     public static final String MODID = "TownBuilder";
 	public static final String MODNAME = "Town Builder";
     public static final String RPREFIX = MODID.toLowerCase() + ":";
-    public static final String VERSION = "1.0.0-Build1";
+    public static final String VERSION = "1.0.0-Build7a";
 
 	public static final String networkChannelName = "TownBuilderC";
 	public static SimpleNetworkWrapper network;
@@ -57,5 +57,8 @@ public class TownBuilder
     }
     
     @EventHandler
-    public void init(FMLInitializationEvent event) {proxy.registerListeners();}
+    public void init(FMLInitializationEvent event) {
+		proxy.registerListeners();
+		proxy.registerServerListeners();
+	}
 }

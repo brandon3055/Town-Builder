@@ -39,7 +39,7 @@ public class CommandCreate implements ISubCommand
 			TownBuilder.network.sendTo(new PacketSchematicClient(args[1]), (EntityPlayerMP) player);
 			return;
 		}
-		if (SchematicHandler.loadCompoundFromFile(args[1]) != null && (args.length != 3 || !args[2].equals("-o")))
+		if (SchematicHandler.getFile(args[1]) != null && (args.length != 3 || !args[2].equals("-o")))
 		{
 			player.addChatMessage(new ChatComponentText("That name is already used! Ether delete it or pick a new name"));
 			return;

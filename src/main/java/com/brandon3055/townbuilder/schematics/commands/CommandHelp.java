@@ -63,4 +63,27 @@ public class CommandHelp implements ISubCommand
 			"Gives information about the usage of the given command"
 		};
 	}
+	/*
+
+	if (args.length == 1)
+			{
+				player.addChatMessage(new ChatComponentText(EnumChatFormatting.BOLD + "Note this will open the following web page"));
+				player.addChatMessage(new ChatComponentText(EnumChatFormatting.BLUE + "http://youtu.be/3vpUF5-qJK8"));
+				player.addChatMessage(new ChatComponentText("To open the page run: /tt-schematic tutorial confirm"));
+			}
+			else if (args.length == 2 && args[1].equals("confirm"))
+			{
+				try
+				{
+					Class oclass = Class.forName("java.awt.Desktop");
+					Object object = oclass.getMethod("getDesktop", new Class[0]).invoke((Object) null);
+					oclass.getMethod("browse", new Class[]{URI.class}).invoke(object, new URI("http://youtu.be/3vpUF5-qJK8"));
+				}
+				catch (Throwable throwable)
+				{
+					LogHelper.error("Couldn\'t open link " + throwable);
+				}
+			}
+
+	 */
 }

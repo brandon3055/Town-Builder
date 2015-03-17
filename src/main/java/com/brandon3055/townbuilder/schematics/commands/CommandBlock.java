@@ -53,11 +53,20 @@ public class CommandBlock implements ISubCommand
 					player.addChatMessage(new ChatComponentText("/tt-schematic block set <schematic name>"));
 					return;
 				}
-				NBTTagCompound compound = SchematicHandler.loadCompoundFromFile(args[2]);
-				if (compound == null)
+
+				if ( SchematicHandler.getFile(args[2]) == null)
 				{
 					player.addChatMessage(new ChatComponentText(args[2] + " Dose not exist"));
 					return;
+				}
+				NBTTagCompound compound = null;
+				try
+				{
+					compound = SchematicHandler.loadCompoundFromFile(args[2]);
+				}
+				catch (SchematicHandler.SchematicException e)
+				{
+					e.printStackTrace();
 				}
 				tile.schematic = args[2];
 				tile.xSize = compound.getShort("Width");
