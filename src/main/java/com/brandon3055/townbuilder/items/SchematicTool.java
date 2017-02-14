@@ -43,6 +43,83 @@ public class SchematicTool extends Item
 		//if (!player.worldObj.isRemote) TolkienTweaks.proxy.receiveFile("test", ((EntityPlayerMP)player).playerNetServerHandler);
 		//LogHelper.info(TolkienTweaks.proxy.isDedicatedServer());
 
+        //addBlocks[index >> 1] = (byte) (((index & 1) != 0) ? addBlocks[index >> 1] & 0xF0 | (Block.getIdFromBlock(block) >> 8) & 0xF : addBlocks[index >> 1] & 0xF | ((Block.getIdFromBlock(block) >> 8) & 0xF) << 4);
+
+//        if (world.isRemote) {
+//
+//
+//            byte id = (byte)world.rand.nextInt(16);
+//            byte meta = (byte)world.rand.nextInt(16);
+//
+//            byte b = (byte)((id & 0xF) << 4 | meta);
+//
+//
+//            LogHelper.info("Combined: " + Integer.toBinaryString(b)+" value: "+b);
+//
+//            int decodedID = (b & 0xF0) >> 4;
+//            int decodedMeta = b & 0xF;
+//
+//
+//            LogHelper.info("Input:  " + id + " " + meta);
+//            LogHelper.info("Output: " + decodedID + " " + decodedMeta);
+//
+//
+//        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		if (player.isSneaking() && stack.hasTagCompound()) stack.getTagCompound().setInteger("Pos1Y", -1);
 		return stack;
 	}

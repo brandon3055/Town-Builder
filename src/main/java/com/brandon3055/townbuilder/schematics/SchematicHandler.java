@@ -177,9 +177,7 @@ public class SchematicHandler {
 							addBlocks = new byte[(blocks.length >> 1) + 1];
 						}
 
-						addBlocks[index >> 1] = (byte) (((index & 1) != 0) ?
-								addBlocks[index >> 1] & 0xF0 | (Block.getIdFromBlock(block) >> 8) & 0xF
-								: addBlocks[index >> 1] & 0xF | ((Block.getIdFromBlock(block) >> 8) & 0xF) << 4);
+						addBlocks[index >> 1] = (byte) (((index & 1) != 0) ? addBlocks[index >> 1] & 0xF0 | (Block.getIdFromBlock(block) >> 8) & 0xF : addBlocks[index >> 1] & 0xF | ((Block.getIdFromBlock(block) >> 8) & 0xF) << 4);
 					}
 
 					blocks[index] = (byte) Block.getIdFromBlock(block);

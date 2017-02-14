@@ -91,6 +91,14 @@ public class StructureBuilder extends Block {
 	{
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Bound"))
 		{
+			if (tile.keyCode == 0)
+			{
+				tile.keyCode = stack.getTagCompound().getInteger("KeyCode");
+				stack.getTagCompound().setString("Bound", "Bound to [multiple builders]");
+				if (player.worldObj.isRemote) player.addChatComponentMessage(new ChatComponentText("Builder bound to key"));
+				return false;
+			}
+
 			if (stack.getTagCompound().getInteger("KeyCode") == tile.keyCode)
 			{
 				if (SchematicHandler.getFile(tile.schematic) == null)
@@ -121,6 +129,7 @@ public class StructureBuilder extends Block {
 				try
 				{
 					SchematicHandler.loadAreaFromCompound(SchematicHandler.loadCompoundFromFile(tile.schematic), player.worldObj, tile.xCoord + tile.xOffset, tile.yCoord + tile.yOffset, tile.zCoord + tile.zOffset, tile.copyAir);
+					player.destroyCurrentEquippedItem();
 				}
 				catch (SchematicHandler.SchematicException e)
 				{

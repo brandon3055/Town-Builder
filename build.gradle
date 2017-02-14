@@ -17,7 +17,7 @@ buildscript {
 
 apply plugin: 'forge'
 
-version = "1.0.0-Build7a"
+version = "1.0.0-Build8"
 group= "com.brandon3055.Town-Builder" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "Town-Builder"
 

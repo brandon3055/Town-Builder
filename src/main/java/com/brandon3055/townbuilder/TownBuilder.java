@@ -18,7 +18,7 @@ public class TownBuilder
     public static final String MODID = "TownBuilder";
 	public static final String MODNAME = "Town Builder";
     public static final String RPREFIX = MODID.toLowerCase() + ":";
-    public static final String VERSION = "1.0.0-Build7a";
+    public static final String VERSION = "1.0.0-Build8";
 
 	public static final String networkChannelName = "TownBuilderC";
 	public static SimpleNetworkWrapper network;
