@@ -1,11 +1,11 @@
 package com.brandon3055.townbuilder.network;
 
+import com.brandon3055.brandonscore.network.MessageHandlerWrapper;
 import com.brandon3055.townbuilder.TownBuilder;
 import com.brandon3055.townbuilder.schematics.commands.CommandList;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Created by Brandon on 25/02/2015.
@@ -23,10 +23,10 @@ public class PacketClientList implements IMessage {
 
 	}
 
-	public static class Handler implements IMessageHandler<PacketClientList, IMessage>
+	public static class Handler extends MessageHandlerWrapper<PacketClientList, IMessage>
 	{
 		@Override
-		public IMessage onMessage(PacketClientList message, MessageContext ctx) {
+		public IMessage handleMessage(PacketClientList message, MessageContext ctx) {
 			CommandList.instance.handleCommand(TownBuilder.proxy.getClientPlayer(), null);
 			return null;
 		}

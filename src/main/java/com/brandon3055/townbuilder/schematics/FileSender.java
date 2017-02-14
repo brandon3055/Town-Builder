@@ -1,12 +1,12 @@
 package com.brandon3055.townbuilder.schematics;
 
 import com.brandon3055.townbuilder.utills.LogHelper;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -34,7 +34,7 @@ public class FileSender
 	public void sendFile(String file, int port, NetHandlerPlayClient handlerPlayClient)
 	{
 		if (this.thread != null && this.thread.getRunning()) {
-			Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "File transfer already in progress"));
+			Minecraft.getMinecraft().thePlayer.addChatComponentMessage(new TextComponentString(TextFormatting.RED + "File transfer already in progress"));
 			return;
 		}
 		this.handlerPlayClient = handlerPlayClient;

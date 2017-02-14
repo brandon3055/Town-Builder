@@ -1,14 +1,18 @@
 package com.brandon3055.townbuilder.schematics.commands;
 
 import com.brandon3055.townbuilder.TownBuilder;
-import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import net.minecraft.command.CommandBase;
+import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -64,7 +68,12 @@ public class CommandHandler extends CommandBase
 	}
 
 	@Override
-	public void processCommand(ICommandSender sender, String[] args) {
+	public List getCommandAliases() {
+		return aliases;
+	}
+
+	@Override
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (!(sender instanceof EntityPlayer)) return;
 		if (args.length > 0 && commands.containsKey(args[0])) {
 			if (commands.get(args[0]).canSenderUseCommand(sender)) commands.get(args[0]).handleCommand((EntityPlayer) sender, args);
@@ -74,32 +83,22 @@ public class CommandHandler extends CommandBase
 	}
 
 	@Override
-	public boolean canCommandSenderUseCommand(ICommandSender sender) {
-		return true;
-	}
-
-	@Override
-	public List getCommandAliases() {
-		return aliases;
-	}
-
-	@Override
-	public List addTabCompletionOptions(ICommandSender sender, String[] args) {
+	public List<String> getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
-			return getListOfStringsFromIterableMatchingLastWord(args, commands.keySet());
+			return getListOfStringsMatchingLastWord(args, commands.keySet());
 		}
 		if (commands.containsKey(args[0])) {
 			return (commands.get(args[0])).addTabCompletionOptions(sender, args);
 		}
-		return null;
+		return super.getTabCompletionOptions(server, sender, args, pos);
 	}
 
 
 	public static boolean checkOpAndNotify(ICommandSender sender)
 	{
-		if (TownBuilder.proxy.isOp(sender.getCommandSenderName())) return true;
+		if (TownBuilder.proxy.isOp(sender.getName())) return true;
 		else {
-			sender.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "You need to be an op to use this command"));
+			sender.addChatMessage(new TextComponentString(TextFormatting.RED + "You need to be an op to use this command"));
 			return false;
 		}
 	}

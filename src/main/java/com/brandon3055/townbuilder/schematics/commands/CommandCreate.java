@@ -1,6 +1,6 @@
 package com.brandon3055.townbuilder.schematics.commands;
 
-import com.brandon3055.townbuilder.ModItems;
+import com.brandon3055.townbuilder.TBFeatures;
 import com.brandon3055.townbuilder.TownBuilder;
 import com.brandon3055.townbuilder.network.PacketSchematicClient;
 import com.brandon3055.townbuilder.schematics.SchematicHandler;
@@ -8,8 +8,8 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ public class CommandCreate implements ISubCommand
 	{
 		if (args.length < 2 || args.length > 3)
 		{
-			player.addChatMessage(new ChatComponentText("/tt-schematic create <name> {-o} [Creates a schematic with given name. -o will make it overwrite an existing schematic with that name if one exists]"));
+			player.addChatMessage(new TextComponentString("/tt-schematic create <name> {-o} [Creates a schematic with given name. -o will make it overwrite an existing schematic with that name if one exists]"));
 			return;
 		}
 		if (args.length == 3 && args[2].equals("client") && TownBuilder.proxy.isDedicatedServer())
@@ -41,18 +41,18 @@ public class CommandCreate implements ISubCommand
 		}
 		if (SchematicHandler.getFile(args[1]) != null && (args.length != 3 || !args[2].equals("-o")))
 		{
-			player.addChatMessage(new ChatComponentText("That name is already used! Ether delete it or pick a new name"));
+			player.addChatMessage(new TextComponentString("That name is already used! Ether delete it or pick a new name"));
 			return;
 		}
-		ItemStack tool = player.getHeldItem();
-		if (tool == null || tool.getItem() != ModItems.schematicTool)
+		ItemStack tool = player.getHeldItemMainhand();
+		if (tool == null || tool.getItem() != TBFeatures.schematicTool)
 		{
-			player.addChatMessage(new ChatComponentText("You are not holding a Schematic Tool"));
+			player.addChatMessage(new TextComponentString("You are not holding a Schematic Tool"));
 			return;
 		}
 		if (!tool.hasTagCompound() || tool.getTagCompound().getInteger("Pos1Y") == -1)
 		{
-			player.addChatMessage(new ChatComponentText("You must first set the region to copy by right clicking one corner of the region and left clicking the other corner"));
+			player.addChatMessage(new TextComponentString("You must first set the region to copy by right clicking one corner of the region and left clicking the other corner"));
 			return;
 		}
 
@@ -74,7 +74,7 @@ public class CommandCreate implements ISubCommand
 
 		SchematicHandler.saveCompoundToFile(SchematicHandler.getCompoundForArea(player.worldObj, x1, y1, z1, xSize, ySize, zSize), args[1]);
 
-		player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + "Region successfully saved to schematic"));
+		player.addChatMessage(new TextComponentString(TextFormatting.GREEN + "Region successfully saved to schematic"));
 	}
 
 	@Override

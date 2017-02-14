@@ -1,78 +1,49 @@
 package com.brandon3055.townbuilder.tileentity;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
+import com.brandon3055.brandonscore.blocks.TileBCBase;
+import com.brandon3055.brandonscore.network.wrappers.SyncableBool;
+import com.brandon3055.brandonscore.network.wrappers.SyncableInt;
+import com.brandon3055.brandonscore.network.wrappers.SyncableString;
+import net.minecraft.util.math.AxisAlignedBB;
 
 /**
  * Created by Brandon on 22/02/2015.
  */
-public class TileStructureBuilder extends TileEntity {
+public class TileStructureBuilder extends TileBCBase {
 
-	public String schematic = "";
-	public boolean showPosition = false;
-	public boolean copyAir = false;
-	public int xOffset = 0;
-	public int yOffset = 0;
-	public int zOffset = 0;
+	public SyncableString schematic = new SyncableString("", true, false);
+	public SyncableBool showPosition = new SyncableBool(false, true, false);
+	public SyncableBool copyAir = new SyncableBool(false, true, false);
+	public SyncableInt xOffset = new SyncableInt(0, true, false);
+	public SyncableInt yOffset = new SyncableInt(0, true, false);
+	public SyncableInt zOffset = new SyncableInt(0, true, false);
 
-	public int xSize = -1;
-	public int ySize = -1;
-	public int zSize = -1;
+	public SyncableInt xSize = new SyncableInt(-1, true, false);
+	public SyncableInt ySize = new SyncableInt(-1, true, false);
+	public SyncableInt zSize = new SyncableInt(-1, true, false);
 
-	public int signRotation = 0;
+	public SyncableInt signRotation = new SyncableInt(0, true, false);
 
-	public int keyCode = 0;
+	public SyncableInt keyCode = new SyncableInt(0, true, false);
 
-	@Override
-	public boolean canUpdate() {
-		return false;
+	public TileStructureBuilder() {
+		registerSyncableObject(schematic);
+		registerSyncableObject(showPosition);
+		registerSyncableObject(copyAir);
+		registerSyncableObject(xOffset);
+		registerSyncableObject(yOffset);
+		registerSyncableObject(zOffset);
+		registerSyncableObject(xSize);
+		registerSyncableObject(ySize);
+		registerSyncableObject(zSize);
+		registerSyncableObject(signRotation);
+		registerSyncableObject(keyCode);
 	}
 
 	@Override
-	public Packet getDescriptionPacket() {
-		NBTTagCompound tagCompound = new NBTTagCompound();
-		writeToNBT(tagCompound);
-		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 1, tagCompound);
-	}
-
-	@Override
-	public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-		readFromNBT(pkt.func_148857_g());
-	}
-
-
-	@Override
-	public void writeToNBT(NBTTagCompound compound) {
-		super.writeToNBT(compound);
-		compound.setString("Schematic", schematic);
-		compound.setBoolean("ShowPosition", showPosition);
-		compound.setBoolean("CopyAir", copyAir);
-		compound.setInteger("XOffset", xOffset);
-		compound.setInteger("YOffset", yOffset);
-		compound.setInteger("ZOffset", zOffset);
-		compound.setInteger("XSize", xSize);
-		compound.setInteger("YSize", ySize);
-		compound.setInteger("ZSize", zSize);
-		compound.setInteger("KeyCode", keyCode);
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound compound) {
-		super.readFromNBT(compound);
-		schematic = compound.getString("Schematic");
-		xOffset = compound.getInteger("XOffset");
-		yOffset = compound.getInteger("YOffset");
-		zOffset = compound.getInteger("ZOffset");
-		xSize = compound.getInteger("XSize");
-		ySize = compound.getInteger("YSize");
-		zSize = compound.getInteger("ZSize");
-		keyCode = compound.getInteger("KeyCode");
-		showPosition = compound.getBoolean("ShowPosition");
-		copyAir = compound.getBoolean("CopyAir");
+	public void updateBlock() {
+		super.updateBlock();
+		detectAndSendChanges();
 	}
 
 	@Override

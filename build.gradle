@@ -1,45 +1,69 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
         maven {
             name = "forge"
             url = "http://files.minecraftforge.net/maven"
         }
-        maven {
-            name = "sonatype"
-            url = "https://oss.sonatype.org/content/repositories/snapshots/"
-        }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:1.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+    }
+}
+apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+repositories {
+    maven {
+        name 'Covers1624 maven'
+        url "http://adel.podgeweb.com:1616/maven/"
+    }
+    maven {
+        name 'Covers1624 maven'
+        url "http://172.17.5.4:1616/maven/"
+    }
+    maven {
+        name 'CB Maven'
+        url "http://chickenbones.net/maven/"
     }
 }
 
-apply plugin: 'forge'
+// Define properties file
+ext.configFile = file "build.properties"
 
-version = "1.0.0-Build7a"
-group= "com.brandon3055.Town-Builder" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Town-Builder"
-
-minecraft {
-    version = "1.7.10-10.13.2.1277"
-    runDir = "run"
+configFile.withReader {
+    // Load config.  It shall from now be referenced as simply config or project.config
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
 }
 
+version = "${config.mcversion}-${config.mod_version}"
+group= "com.brandon3055.townbuilder"
+archivesBaseName = "TownBuilder"
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
+
+minecraft {
+    version = config.mcversion + "-" + config.forge_version
+    runDir = "run"
+    mappings = "${config.mcp_mappings}"
+    replace '${mod_version}', project.config.mod_version
+    replaceIn "TownBuilder.java"
+    makeObfSourceJar = false
+}
+
+String buildNo = "1"
+if (System.getenv("BUILD_NUMBER") != null) {
+    buildNo = System.getenv("BUILD_NUMBER")
+}
+version = version + ".${buildNo}"
+
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
-
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-
+    compile "com.brandon3055.brandonscore:BrandonsCore:${config.mcversion}-${config.bcore_version}:deobf"
+    compile "codechicken:CodeChickenLib:${config.mcversion}-${config.CCLIB_version}:deobf"
 }
 
 processResources
@@ -59,5 +83,76 @@ processResources
     // copy everything else, thats not the mcmod.info
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
+    }
+}
+
+def commonManifest = {
+//    attributes 'FMLAT': 'DraconicEvolution_at.cfg'
+}
+
+jar {
+    classifier = 'universal'
+    manifest commonManifest
+}
+
+task srcJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task deobfJar(type: Jar) {
+    from sourceSets.main.output
+    classifier = 'deobf'
+    manifest commonManifest
+}
+
+// Tell the artifact system about our extra jars
+artifacts {
+    archives srcJar, deobfJar
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            if (project.hasProperty("local_maven")) {
+                repository(url: "file://${local_maven}")
+                pom {
+                    groupId = project.group
+                    version = project.version
+                    artifactId = project.archivesBaseName
+                    project {
+                        name project.archivesBaseName
+                        packaging 'jar'
+                        description 'TolkienTweaks'
+                        url 'https://github.com/brandon3055/Town-Builder'
+                        scm {
+                            url 'https://github.com/brandon3055/Town-Builder'
+                            connection 'scm:git:git@github.com:brandon3055/Town-Builder.git'
+                            developerConnection 'scm:git:git@github.com:brandon3055/Town-Builder.git'
+                        }
+                        issueManagement {
+                            system 'github'
+                            url 'https://github.com/brandon3055/Town-Builder/issues'
+                        }
+                        licenses {
+                            license {
+                                name 'License'
+                                url 'https://github.com/brandon3055/Town-Builder/master/LICENSE.txt'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'brandon3055'
+                                name 'brandon3055'
+                                roles { role 'developer' }
+                            }
+                        }
+                    }
+                }
+            } else {
+                println 'Maven upload triggered but no local_maven property found!'
+            }
+        }
     }
 }

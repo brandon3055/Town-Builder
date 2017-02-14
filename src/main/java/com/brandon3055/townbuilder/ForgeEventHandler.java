@@ -1,10 +1,10 @@
 package com.brandon3055.townbuilder;
 
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 /**
  * Created by Brandon on 22/01/2015.
@@ -14,39 +14,41 @@ public class ForgeEventHandler {
 	@SubscribeEvent
 	public void playerInteract(PlayerInteractEvent event)
 	{
-		if ((event.action != PlayerInteractEvent.Action.LEFT_CLICK_BLOCK && event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) || event.entityPlayer.getHeldItem() == null || event.entityPlayer.getHeldItem().getItem() != ModItems.schematicTool) return;
+		if (!(event instanceof PlayerInteractEvent.LeftClickBlock || event instanceof PlayerInteractEvent.RightClickBlock) || event.getEntityPlayer().getHeldItemMainhand() == null || event.getEntityPlayer().getHeldItemMainhand().getItem() != TBFeatures.schematicTool) {
+			return;
+		}
 
-		ItemStack tool = event.entityPlayer.getHeldItem();
+		ItemStack tool = event.getEntityPlayer().getHeldItemMainhand();
 
-		if (event.action == PlayerInteractEvent.Action.LEFT_CLICK_BLOCK)
+		if (event instanceof PlayerInteractEvent.LeftClickBlock)
 		{
 			if (!tool.hasTagCompound()) tool.setTagCompound(new NBTTagCompound());
 			if (tool.getTagCompound().getInteger("Pos1Y") == -1)
 			{
-				tool.getTagCompound().setInteger("Pos2X", event.x);
-				tool.getTagCompound().setInteger("Pos2Y", event.y);
-				tool.getTagCompound().setInteger("Pos2Z", event.z);
+				tool.getTagCompound().setInteger("Pos2X", event.getPos().getX());
+				tool.getTagCompound().setInteger("Pos2Y", event.getPos().getY());
+				tool.getTagCompound().setInteger("Pos2Z", event.getPos().getZ());
 			}
-			tool.getTagCompound().setInteger("Pos1X", event.x);
-			tool.getTagCompound().setInteger("Pos1Y", event.y);
-			tool.getTagCompound().setInteger("Pos1Z", event.z);
-			event.entityPlayer.addChatComponentMessage(new ChatComponentText("Pos1 Set"));
+			tool.getTagCompound().setInteger("Pos1X", event.getPos().getX());
+			tool.getTagCompound().setInteger("Pos1Y", event.getPos().getY());
+			tool.getTagCompound().setInteger("Pos1Z", event.getPos().getZ());
+			event.getEntityPlayer().addChatComponentMessage(new TextComponentString("Pos1 Set"));
 			event.setCanceled(true);
 		}
-		else if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK)
+		else if (event instanceof PlayerInteractEvent.RightClickBlock)
 		{
 			if (!tool.hasTagCompound()) tool.setTagCompound(new NBTTagCompound());
 			if (tool.getTagCompound().getInteger("Pos1Y") == -1)
 			{
-				tool.getTagCompound().setInteger("Pos1X", event.x);
-				tool.getTagCompound().setInteger("Pos1Y", event.y);
-				tool.getTagCompound().setInteger("Pos1Z", event.z);
+				tool.getTagCompound().setInteger("Pos1X", event.getPos().getX());
+				tool.getTagCompound().setInteger("Pos1Y", event.getPos().getY());
+				tool.getTagCompound().setInteger("Pos1Z", event.getPos().getZ());
 			}
 
-			tool.getTagCompound().setInteger("Pos2X", event.x);
-			tool.getTagCompound().setInteger("Pos2Y", event.y);
-			tool.getTagCompound().setInteger("Pos2Z", event.z);
-			if (event.entityPlayer.worldObj.isRemote)event.entityPlayer.addChatComponentMessage(new ChatComponentText("Pos2 Set"));
+			tool.getTagCompound().setInteger("Pos2X", event.getPos().getX());
+			tool.getTagCompound().setInteger("Pos2Y", event.getPos().getY());
+			tool.getTagCompound().setInteger("Pos2Z", event.getPos().getZ());
+			if (event.getEntityPlayer().worldObj.isRemote)event.getEntityPlayer().addChatComponentMessage(new TextComponentString("Pos2 Set"));
 			else event.setCanceled(true);
 		}
 	}

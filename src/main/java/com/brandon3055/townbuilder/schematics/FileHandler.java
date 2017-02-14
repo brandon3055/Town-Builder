@@ -3,12 +3,12 @@ package com.brandon3055.townbuilder.schematics;
 import com.brandon3055.townbuilder.TownBuilder;
 import com.brandon3055.townbuilder.network.PacketByteStream;
 import com.brandon3055.townbuilder.utills.LogHelper;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -35,7 +35,7 @@ public class FileHandler {
 			transferInProgress = false;
 			transferTimeOut = 0;
 			receivedPackets = null;
-			if (player != null) player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "[SERVER] Upload Failed (missing packet(s))"));
+			if (player != null) player.addChatComponentMessage(new TextComponentString(TextFormatting.RED + "[SERVER] Upload Failed (missing packet(s))"));
 			LogHelper.error("File upload failed (did not receive all packets)");
 		}
 	}
@@ -97,19 +97,19 @@ public class FileHandler {
 			TownBuilder.network.sendToServer(new PacketByteStream(splitBytes.get(i), splitBytes.size(), i));
 		}
 
-		TownBuilder.proxy.getClientPlayer().addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "[CLIENT] File Sent"));
+		TownBuilder.proxy.getClientPlayer().addChatComponentMessage(new TextComponentString(TextFormatting.GREEN + "[CLIENT] File Sent"));
 	}
 
 	public void receiveFile(PacketByteStream message, MessageContext ctx) {
 		if (player == null) player = ctx.getServerHandler().playerEntity;
-		if (transferInProgress && ctx.getServerHandler().playerEntity != player || !TownBuilder.proxy.isOp(player.getCommandSenderName()))
+		if (transferInProgress && ctx.getServerHandler().playerEntity != player || !TownBuilder.proxy.isOp(player.getName()))
 		{
-			ctx.getServerHandler().playerEntity.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "[SERVER] Error Transfer already in progress... "));
+			ctx.getServerHandler().playerEntity.addChatComponentMessage(new TextComponentString(TextFormatting.RED + "[SERVER] Error Transfer already in progress... "));
 			LogHelper.error("#####################################################");
 			LogHelper.error("Client attempted to send unauthorised file to server");
 			LogHelper.error("This is ether a result of a bug or client hacking");
 			LogHelper.error("Please report to brandon3055");
-			LogHelper.error("Sender: " + ctx.getServerHandler().playerEntity.getCommandSenderName());
+			LogHelper.error("Sender: " + ctx.getServerHandler().playerEntity.getName());
 			LogHelper.error("#####################################################");
 			return;
 		}
@@ -119,8 +119,8 @@ public class FileHandler {
 		transferTimeOut = 0;
 		if (receivedPackets == null) {
 			player = ctx.getServerHandler().playerEntity;
-			LogHelper.info("Receiving File from " + ctx.getServerHandler().playerEntity.getCommandSenderName() + " [" + message.packetCount + " packets]");
-			ctx.getServerHandler().playerEntity.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.DARK_GREEN + "[SERVER] Receiving File"));
+			LogHelper.info("Receiving File from " + ctx.getServerHandler().playerEntity.getName() + " [" + message.packetCount + " packets]");
+			ctx.getServerHandler().playerEntity.addChatComponentMessage(new TextComponentString(TextFormatting.DARK_GREEN + "[SERVER] Receiving File"));
 			receivedPackets = new ArrayList<PacketByteStream>(message.packetCount);
 		}
 		receivedPackets.add(message.packetindex, message);
@@ -179,7 +179,7 @@ public class FileHandler {
 
 		transferInProgress = false;
 		receivedPackets = null;
-		ctx.getServerHandler().playerEntity.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.GREEN + "[SERVER] File Received"));
+		ctx.getServerHandler().playerEntity.addChatComponentMessage(new TextComponentString(TextFormatting.GREEN + "[SERVER] File Received"));
 	}
 
 

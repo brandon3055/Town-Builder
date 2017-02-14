@@ -1,13 +1,12 @@
 package com.brandon3055.townbuilder.items;
 
-import com.brandon3055.townbuilder.TownBuilder;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumHand;
 import net.minecraft.world.World;
 
 import java.util.List;
@@ -18,11 +17,11 @@ import java.util.List;
 public class SchematicTool extends Item
 {
 	public SchematicTool() {
-		this.setUnlocalizedName(TownBuilder.RPREFIX + "schematicTool");
+//		this.setUnlocalizedName(TownBuilder.RPREFIX + "schematicTool");
 		this.setMaxStackSize(1);
 		setHasSubtypes(true);
-
-		GameRegistry.registerItem(this, "schematicTool");
+//
+//		GameRegistry.registerItem(this, "schematicTool");
 	}
 
 	@Override
@@ -33,17 +32,43 @@ public class SchematicTool extends Item
 		list.add(stack);
 	}
 
-	@Override
-	public void registerIcons(IIconRegister iIconRegister) {
-		itemIcon = iIconRegister.registerIcon(TownBuilder.RPREFIX + "schematicTool");
-	}
+//	@Override
+//	public void registerIcons(IIconRegister iIconRegister) {
+//		itemIcon = iIconRegister.registerIcon(TownBuilder.RPREFIX + "schematicTool");
+//	}
+
 
 	@Override
-	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {//throws IOException
+	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World world, EntityPlayer player, EnumHand hand) {
 		//if (!player.worldObj.isRemote) TolkienTweaks.proxy.receiveFile("test", ((EntityPlayerMP)player).playerNetServerHandler);
 		//LogHelper.info(TolkienTweaks.proxy.isDedicatedServer());
 
-		if (player.isSneaking() && stack.hasTagCompound()) stack.getTagCompound().setInteger("Pos1Y", -1);
-		return stack;
+        //addBlocks[index >> 1] = (byte) (((index & 1) != 0) ? addBlocks[index >> 1] & 0xF0 | (Block.getIdFromBlock(block) >> 8) & 0xF : addBlocks[index >> 1] & 0xF | ((Block.getIdFromBlock(block) >> 8) & 0xF) << 4);
+
+//        if (world.isRemote) {
+//
+//
+//            byte id = (byte)world.rand.nextInt(16);
+//            byte meta = (byte)world.rand.nextInt(16);
+//
+//            byte b = (byte)((id & 0xF) << 4 | meta);
+//
+//
+//            LogHelper.info("Combined: " + Integer.toBinaryString(b)+" value: "+b);
+//
+//            int decodedID = (b & 0xF0) >> 4;
+//            int decodedMeta = b & 0xF;
+//
+//
+//            LogHelper.info("Input:  " + id + " " + meta);
+//            LogHelper.info("Output: " + decodedID + " " + decodedMeta);
+//
+//
+//        }
+		if (player.isSneaking() && stack.hasTagCompound()) {
+			stack.getTagCompound().setInteger("Pos1Y", -1);
+		}
+		return super.onItemRightClick(stack, world, player, hand);
+
 	}
 }

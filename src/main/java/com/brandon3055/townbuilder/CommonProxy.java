@@ -6,13 +6,13 @@ import com.brandon3055.townbuilder.network.PacketFileTransfer;
 import com.brandon3055.townbuilder.network.PacketSchematicClient;
 import com.brandon3055.townbuilder.schematics.FileHandler;
 import com.brandon3055.townbuilder.tileentity.TileStructureBuilder;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.NetworkRegistry;
-import cpw.mods.fml.common.registry.GameRegistry;
-import cpw.mods.fml.relauncher.Side;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 /**
  * Created by Brandon on 13/01/2015.
@@ -28,7 +28,7 @@ public class CommonProxy {
 	}
 
 	public void registerServerListeners() {
-		FMLCommonHandler.instance().bus().register(FileHandler.instance);
+		MinecraftForge.EVENT_BUS.register(FileHandler.instance);
 	}
 
 	public void registerTileEntities() {
@@ -48,7 +48,7 @@ public class CommonProxy {
 	{
 		MinecraftServer localMinecraftServer = FMLCommonHandler.instance().getMinecraftServerInstance();
 		paramString = paramString.trim();
-		for (String str : localMinecraftServer.getConfigurationManager().func_152606_n()) {
+		for (String str : localMinecraftServer.getPlayerList().getOppedPlayerNames()) {
 			if (paramString.equalsIgnoreCase(str)) {
 				return true;
 			}

@@ -1,0 +1,17 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "builtin/generated",
+    "textures": {
+      "layer0": "blocks/dirt"
+    },
+    "transform": "forge:default-item"
+  },
+  "variants": {
+    "type":{
+      "house_key": { "textures": { "layer0": "townbuilder:items/house_key"  } },
+      "schematic_tool":{ "textures": { "layer0": "townbuilder:items/schematic_tool" } }
+    },
+    "normal": [{}]
+  }
+}

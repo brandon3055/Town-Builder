@@ -1,14 +1,14 @@
 package com.brandon3055.townbuilder.blocks;
 
-import com.brandon3055.townbuilder.ModItems;
-import com.brandon3055.townbuilder.TownBuilder;
+import com.brandon3055.brandonscore.blocks.BlockBCore;
+import com.brandon3055.brandonscore.utils.InventoryUtils;
+import com.brandon3055.townbuilder.TBFeatures;
 import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import com.brandon3055.townbuilder.tileentity.TileStructureBuilder;
 import com.brandon3055.townbuilder.utills.LogHelper;
 import com.brandon3055.townbuilder.utills.Utills;
-import cpw.mods.fml.common.registry.GameRegistry;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
+import net.minecraft.block.ITileEntityProvider;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -16,40 +16,30 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntitySign;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.ForgeDirection;
+
+import javax.annotation.Nullable;
 
 /**
  * Created by Brandon on 21/02/2015.
  */
-public class StructureBuilder extends Block {
+public class StructureBuilder extends BlockBCore implements ITileEntityProvider{
 	public StructureBuilder() {
-		super(Material.rock);
-		this.setBlockTextureName(TownBuilder.RPREFIX + "structureBuilder");
-		this.setBlockName(TownBuilder.RPREFIX + "structureBuilder");
 		this.setHardness(10F);
 		this.setResistance(100F);
 
-		GameRegistry.registerBlock(this, "structureBuilder");
 	}
 
-	@Override
-	public boolean hasTileEntity(int metadata) {
-		return true;
-	}
 
 	@Override
-	public TileEntity createTileEntity(World world, int metadata) {
-		return new TileStructureBuilder();
-	}
-
-	@Override
-	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int side, float p_149727_7_, float p_149727_8_, float p_149727_9_) {
-		TileStructureBuilder tile = world.getTileEntity(x, y, z) instanceof TileStructureBuilder ? (TileStructureBuilder) world.getTileEntity(x, y, z) : null;
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, @Nullable ItemStack stack, EnumFacing side, float hitX, float hitY, float hitZ) {
+		TileStructureBuilder tile = world.getTileEntity(pos) instanceof TileStructureBuilder ? (TileStructureBuilder) world.getTileEntity(pos) : null;
 		if (tile == null) return false;
-		ItemStack stack = player.getHeldItem();
 
 		if (player.capabilities.isCreativeMode)
 		{
@@ -57,70 +47,76 @@ public class StructureBuilder extends Block {
 			{
 				switch (side)
 				{
-					case 0:
-					case 1:
-						tile.yOffset += ForgeDirection.getOrientation(side).offsetY;
+					case DOWN:
+					case UP:
+						tile.yOffset.value += side.getFrontOffsetY();
 						return true;
-					case 2:
-					case 3:
-						tile.zOffset += ForgeDirection.getOrientation(side).offsetZ;
+					case NORTH:
+					case SOUTH:
+						tile.zOffset.value += side.getFrontOffsetZ();
 						return true;
-					case 4:
-					case 5:
-						tile.xOffset += ForgeDirection.getOrientation(side).offsetX;
+					case WEST:
+					case EAST:
+						tile.xOffset.value += side.getFrontOffsetX();
 						return true;
 				}
 			}
-			else if (stack != null && stack.getItem() == ModItems.houseKey)
+			else if (stack != null && stack.getItem() == TBFeatures.houseKey)
 			{
 				handleKeyClick(tile, player, stack);
 				return true;
 			}
 			return true;
 		}
-		else if (stack != null && stack.getItem() == ModItems.houseKey)
+		else if (stack != null && stack.getItem() == TBFeatures.houseKey)
 		{
 			handleKeyClick(tile, player, stack);
 			return true;
 		}
 
-		return super.onBlockActivated(world, x, y, z, player, side, p_149727_7_, p_149727_8_, p_149727_9_);
+		return super.onBlockActivated(world, pos, state, player, hand, stack, side, hitX, hitY, hitZ);
 	}
 
 	private boolean handleKeyClick(TileStructureBuilder tile, EntityPlayer player, ItemStack stack)
 	{
 		if (stack.hasTagCompound() && stack.getTagCompound().hasKey("Bound"))
 		{
-			if (stack.getTagCompound().getInteger("KeyCode") == tile.keyCode)
+			if (tile.keyCode.value == 0)
 			{
-				if (SchematicHandler.getFile(tile.schematic) == null)
+				tile.keyCode.value = stack.getTagCompound().getInteger("KeyCode");
+				stack.getTagCompound().setString("Bound", "Bound to [multiple builders]");
+				if (player.worldObj.isRemote) player.addChatComponentMessage(new TextComponentString("Builder bound to key"));
+				return false;
+			}
+
+			if (stack.getTagCompound().getInteger("KeyCode") == tile.keyCode.value)
+			{
+				if (SchematicHandler.getFile(tile.schematic.value) == null)
 				{
-					player.addChatComponentMessage(new ChatComponentText("[Error - 404] Schematic {" + tile.schematic + "} not found!!!"));
+					player.addChatComponentMessage(new TextComponentString("[Error - 404] Schematic {" + tile.schematic.value + "} not found!!!"));
 					LogHelper.info("[Error - 404] Schematic {" + tile.schematic + "} not found!!!");
 					return false;
 				}
 
-				World world = tile.getWorldObj();
-				int x = tile.xCoord;
-				int y = tile.yCoord;
-				int z = tile.zCoord;
-
-				world.setBlock(x, y, z, Blocks.standing_sign);
-				TileEntitySign sign = world.getTileEntity(x, y, z) instanceof TileEntitySign ? (TileEntitySign) world.getTileEntity(x, y, z) : null;
+				World world = tile.getWorld();
+				BlockPos pos = tile.getPos();
+				world.setBlockState(pos, Blocks.STANDING_SIGN.getStateFromMeta(tile.signRotation.value));
+				TileEntitySign sign = world.getTileEntity(pos) instanceof TileEntitySign ? (TileEntitySign) world.getTileEntity(pos) : null;
 
 				if (sign != null)
 				{
-					sign.signText[0] = Utills.cutStringToLength("§1" + "################", 15);//"§1" + "#############";
-					sign.signText[1] = Utills.cutStringToLength("§4" + "Purchased By", 15);//"§4" + "Purchased By";
-					sign.signText[2] = Utills.cutStringToLength("§2" + player.getCommandSenderName(), 15);// + player.getCommandSenderName());//"§2" + "test";// + player.getCommandSenderName();
-					sign.signText[3] = Utills.cutStringToLength("§1" + "################", 15);//"§1" + "#############";
+					sign.signText[0] = new TextComponentString(Utills.cutStringToLength("§1" + "################", 15));//"§1" + "#############";
+					sign.signText[1] = new TextComponentString(Utills.cutStringToLength("§4" + "Purchased By", 15));//"§4" + "Purchased By";
+					sign.signText[2] = new TextComponentString(Utills.cutStringToLength("§2" + player.getName(), 15));// + player.getCommandSenderName());//"§2" + "test";// + player.getCommandSenderName();
+					sign.signText[3] = new TextComponentString(Utills.cutStringToLength("§1" + "################", 15));//"§1" + "#############";
 				}
 
-				world.setBlockMetadataWithNotify(x, y, z, tile.signRotation, 2);
+//				world.setBlockMetadataWithNotify(x, y, z, tile.signRotation, 2);
 
 				try
 				{
-					SchematicHandler.loadAreaFromCompound(SchematicHandler.loadCompoundFromFile(tile.schematic), player.worldObj, tile.xCoord + tile.xOffset, tile.yCoord + tile.yOffset, tile.zCoord + tile.zOffset, tile.copyAir);
+					SchematicHandler.loadAreaFromCompound(SchematicHandler.loadCompoundFromFile(tile.schematic.value), player.worldObj, pos.getX() + tile.xOffset.value, pos.getY() + tile.yOffset.value, pos.getZ() + tile.zOffset.value, tile.copyAir.value);
+					InventoryUtils.consumeStack(new ItemStack(stack.getItem(), 1), player.inventory);
 				}
 				catch (SchematicHandler.SchematicException e)
 				{
@@ -133,18 +129,24 @@ public class StructureBuilder extends Block {
 		}
 		else if (player.capabilities.isCreativeMode)
 		{
-			if (tile.keyCode == 0) tile.keyCode = MathHelper.getRandomIntegerInRange(tile.getWorldObj().rand, 1, Integer.MAX_VALUE);
+			if (tile.keyCode.value == 0) tile.keyCode.value = MathHelper.getRandomIntegerInRange(tile.getWorld().rand, 1, Integer.MAX_VALUE);
 			stack.setTagCompound(new NBTTagCompound());
-			stack.getTagCompound().setInteger("KeyCode", tile.keyCode);
-			stack.getTagCompound().setString("Bound", "Bound to [x:" + tile.xCoord + " ,y:" + tile.yCoord + " ,z:" + tile.zCoord + "]");
+			stack.getTagCompound().setInteger("KeyCode", tile.keyCode.value);
+			stack.getTagCompound().setString("Bound", "Bound to [x:" + tile.getPos().getX() + " ,y:" + tile.getPos().getY() + " ,z:" + tile.getPos().getZ() + "]");
 		}
 		return false;
 	}
 
 	@Override
-	public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase player, ItemStack p_149689_6_) {
-		TileStructureBuilder tile = world.getTileEntity(x, y, z) instanceof TileStructureBuilder ? (TileStructureBuilder) world.getTileEntity(x, y, z) : null;
+	public void onBlockPlacedBy(World world, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack) {
+		TileStructureBuilder tile = world.getTileEntity(pos) instanceof TileStructureBuilder ? (TileStructureBuilder) world.getTileEntity(pos) : null;
 		if (tile == null) return;
-		tile.signRotation =  MathHelper.floor_double((double)((player.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
+		tile.signRotation.value =  MathHelper.floor_double((double)((placer.rotationYaw + 180.0F) * 16.0F / 360.0F) + 0.5D) & 15;
+		super.onBlockPlacedBy(world, pos, state, placer, stack);
+	}
+
+	@Override
+	public TileEntity createNewTileEntity(World worldIn, int meta) {
+		return new TileStructureBuilder();
 	}
 }

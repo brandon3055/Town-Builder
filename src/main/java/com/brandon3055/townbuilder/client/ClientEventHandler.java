@@ -1,14 +1,17 @@
 package com.brandon3055.townbuilder.client;
 
-import com.brandon3055.townbuilder.ModItems;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import com.brandon3055.townbuilder.TBFeatures;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
 
 /**
@@ -21,10 +24,10 @@ public class ClientEventHandler {
 	public void renderWorld(RenderWorldLastEvent event)
 	{
 
-		if (Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode && Minecraft.getMinecraft().thePlayer.getHeldItem() != null && Minecraft.getMinecraft().thePlayer.getHeldItem().getItem() == ModItems.schematicTool)
+		if (Minecraft.getMinecraft().thePlayer.capabilities.isCreativeMode && Minecraft.getMinecraft().thePlayer.getHeldItemMainhand() != null && Minecraft.getMinecraft().thePlayer.getHeldItemMainhand().getItem() == TBFeatures.schematicTool)
 		{
-			EntityClientPlayerMP player = Minecraft.getMinecraft().thePlayer;
-			ItemStack tool = player.getHeldItem();
+			EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+			ItemStack tool = player.getHeldItemMainhand();
 
 			if (!tool.hasTagCompound() ) return;
 
@@ -45,72 +48,74 @@ public class ClientEventHandler {
 			int ySize = y2 - y1 + 1;
 			int zSize = z2 - z1 + 1;
 
-			double trX = x1 - player.prevPosX - (player.posX - player.prevPosX) * (double)event.partialTicks;
-			double trY = y1 - player.prevPosY - (player.posY - player.prevPosY) * (double)event.partialTicks;
-			double trZ = z1 - player.prevPosZ - (player.posZ - player.prevPosZ) * (double)event.partialTicks;
+			double trX = x1 - player.prevPosX - (player.posX - player.prevPosX) * (double)event.getPartialTicks();
+			double trY = y1 - player.prevPosY - (player.posY - player.prevPosY) * (double)event.getPartialTicks();
+			double trZ = z1 - player.prevPosZ - (player.posZ - player.prevPosZ) * (double)event.getPartialTicks();
 
 //			int xSize = x2 - x1 + 1;
 //			int ySize = y2 - y1 + 1;
 //			int zSize = z2 - z1 + 1;
 
 
-			GL11.glDisable(GL11.GL_TEXTURE_2D);
-			GL11.glShadeModel(GL11.GL_SMOOTH);
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
-			GL11.glDisable(GL11.GL_ALPHA_TEST);
-			GL11.glDisable(GL11.GL_CULL_FACE);
-			GL11.glDepthMask(false);
+			GlStateManager.disableTexture2D();
+			GlStateManager.shadeModel(GL11.GL_SMOOTH);
+			GlStateManager.enableBlend();
+			GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
+			GlStateManager.disableAlpha();
+			GlStateManager.disableCull();
+			GlStateManager.depthMask(false);
 
-			GL11.glPushMatrix();
+			GlStateManager.pushMatrix();
 
-			GL11.glTranslated(trX, trY, trZ);
+			GlStateManager.translate(trX, trY, trZ);
 
-			Tessellator tess = Tessellator.instance;
+			Tessellator tess = Tessellator.getInstance();
+			VertexBuffer buffer = tess.getBuffer();
+			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 
-			tess.startDrawingQuads();
-			tess.setColorRGBA_F(1f, 0f, 0f, 0.5f);
+//			tess.startDrawingQuads();
+//			tess.setColorRGBA_F(1f, 0f, 0f, 0.5f);
 
 			{//main Cube
-				tess.addVertex(0, 0, 0);
-				tess.addVertex(0, ySize, 0);
-				tess.addVertex(xSize, ySize, 0);
-				tess.addVertex(xSize, 0, 0);
+				buffer.pos(0, 0, 0).color(1f, 0f, 0f, 0.5f).endVertex();
+				buffer.pos(0, ySize, 0).color(1f, 0f, 0f, 0.5f).endVertex();
+				buffer.pos(xSize, ySize, 0).color(1f, 0f, 0f, 0.5f).endVertex();
+				buffer.pos(xSize, 0, 0).color(1f, 0f, 0f, 0.5f).endVertex();
 
-				tess.setColorRGBA_F(1f, 1f, 0f, 0.5f);
+//				buffer.setColorRGBA_F(1f, 1f, 0f, 0.5f);
 
-				tess.addVertex(0, 0, 0);
-				tess.addVertex(0, 0, zSize);
-				tess.addVertex(0, ySize, zSize);
-				tess.addVertex(0, ySize, 0);
+				buffer.pos(0, 0, 0).color(1f, 1f, 0f, 0.5f).endVertex();
+				buffer.pos(0, 0, zSize).color(1f, 1f, 0f, 0.5f).endVertex();
+				buffer.pos(0, ySize, zSize).color(1f, 1f, 0f, 0.5f).endVertex();
+				buffer.pos(0, ySize, 0).color(1f, 1f, 0f, 0.5f).endVertex();
 
-				tess.setColorRGBA_F(1f, 0f, 1f, 0.5f);
+//				buffer.setColorRGBA_F(1f, 0f, 1f, 0.5f);
 
-				tess.addVertex(xSize, 0, 0);
-				tess.addVertex(xSize, ySize, 0);
-				tess.addVertex(xSize, ySize, zSize);
-				tess.addVertex(xSize, 0, zSize);
+				buffer.pos(xSize, 0, 0).color(1f, 0f, 1f, 0.5f).endVertex();
+				buffer.pos(xSize, ySize, 0).color(1f, 0f, 1f, 0.5f).endVertex();
+				buffer.pos(xSize, ySize, zSize).color(1f, 0f, 1f, 0.5f).endVertex();
+				buffer.pos(xSize, 0, zSize).color(1f, 0f, 1f, 0.5f).endVertex();
 
-				tess.setColorRGBA_F(0f, 1f, 1f, 0.5f);
+//				buffer.setColorRGBA_F(0f, 1f, 1f, 0.5f);
 
-				tess.addVertex(0, 0, zSize);
-				tess.addVertex(xSize, 0, zSize);
-				tess.addVertex(xSize, ySize, zSize);
-				tess.addVertex(0, ySize, zSize);
+				buffer.pos(0, 0, zSize).color(0f, 1f, 1f, 0.5f).endVertex();
+				buffer.pos(xSize, 0, zSize).color(0f, 1f, 1f, 0.5f).endVertex();
+				buffer.pos(xSize, ySize, zSize).color(0f, 1f, 1f, 0.5f).endVertex();
+				buffer.pos(0, ySize, zSize).color(0f, 1f, 1f, 0.5f).endVertex();
 
-				tess.setColorRGBA_F(0f, 1f, 0f, 0.5f);
+//				buffer.setColorRGBA_F(0f, 1f, 0f, 0.5f);
 
-				tess.addVertex(0, 0, 0);
-				tess.addVertex(xSize, 0, 0);
-				tess.addVertex(xSize, 0, zSize);
-				tess.addVertex(0, 0, zSize);
+				buffer.pos(0, 0, 0).color(0f, 1f, 0f, 0.5f).endVertex();
+				buffer.pos(xSize, 0, 0).color(0f, 1f, 0f, 0.5f).endVertex();
+				buffer.pos(xSize, 0, zSize).color(0f, 1f, 0f, 0.5f).endVertex();
+				buffer.pos(0, 0, zSize).color(0f, 1f, 0f, 0.5f).endVertex();
 
-				tess.setColorRGBA_F(0f, 0f, 1f, 0.5f);
+//				buffer.setColorRGBA_F(0f, 0f, 1f, 0.5f);
 
-				tess.addVertex(0, ySize, 0);
-				tess.addVertex(0, ySize, zSize);
-				tess.addVertex(xSize, ySize, zSize);
-				tess.addVertex(xSize, ySize, 0);
+				buffer.pos(0, ySize, 0).color(0f, 0f, 1f, 0.5f).endVertex();
+				buffer.pos(0, ySize, zSize).color(0f, 0f, 1f, 0.5f).endVertex();
+				buffer.pos(xSize, ySize, zSize).color(0f, 0f, 1f, 0.5f).endVertex();
+				buffer.pos(xSize, ySize, 0).color(0f, 0f, 1f, 0.5f).endVertex();
 			}
 			tess.draw();
 
@@ -125,92 +130,92 @@ public class ClientEventHandler {
 			ySize = y2 - y1 + 1;
 			zSize = z2 - z1 + 1;
 
-			trX = x1 - player.prevPosX - (player.posX - player.prevPosX) * (double)event.partialTicks;
-			trY = y1 - player.prevPosY - (player.posY - player.prevPosY) * (double)event.partialTicks;
-			trZ = z1 - player.prevPosZ - (player.posZ - player.prevPosZ) * (double)event.partialTicks;
+			trX = x1 - player.prevPosX - (player.posX - player.prevPosX) * (double)event.getPartialTicks();
+			trY = y1 - player.prevPosY - (player.posY - player.prevPosY) * (double)event.getPartialTicks();
+			trZ = z1 - player.prevPosZ - (player.posZ - player.prevPosZ) * (double)event.getPartialTicks();
 
 
-			GL11.glDisable(GL11.GL_BLEND);
-			GL11.glPopMatrix();
-			GL11.glPushMatrix();
+			GlStateManager.disableBlend();
+			GlStateManager.popMatrix();
+			GlStateManager.pushMatrix();
 
-			GL11.glTranslated(trX, trY, trZ);
+			GlStateManager.translate(trX, trY, trZ);
 
-			tess.startDrawingQuads();
+			buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
 			{//Pos1
-				tess.setColorRGBA_F(0f, 0.5f, 0f, 0.8f);
+//				tess.setColorRGBA_F(0f, 0.5f, 0f, 0.8f);
 
-				tess.addVertex(0, 0, 0);
-				tess.addVertex(0, 1, 0);
-				tess.addVertex(1, 1, 0);
-				tess.addVertex(1, 0, 0);
+				buffer.pos(0, 0, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(0, 1, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 1, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 0, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
 
-				tess.addVertex(0, 0, 0);
-				tess.addVertex(0, 0, 1);
-				tess.addVertex(0, 1, 1);
-				tess.addVertex(0, 1, 0);
+				buffer.pos(0, 0, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(0, 0, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(0, 1, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(0, 1, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
 
-				tess.addVertex(1, 0, 0);
-				tess.addVertex(1, 1, 0);
-				tess.addVertex(1, 1, 1);
-				tess.addVertex(1, 0, 1);
+				buffer.pos(1, 0, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 1, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 1, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 0, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
 
-				tess.addVertex(0, 0, 1);
-				tess.addVertex(1, 0, 1);
-				tess.addVertex(1, 1, 1);
-				tess.addVertex(0, 1, 1);
+				buffer.pos(0, 0, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 0, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 1, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(0, 1, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
 
-				tess.addVertex(0, 0, 0);
-				tess.addVertex(1, 0, 0);
-				tess.addVertex(1, 0, 1);
-				tess.addVertex(0, 0, 1);
+				buffer.pos(0, 0, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 0, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 0, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(0, 0, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
 
-				tess.addVertex(0, 1, 0);
-				tess.addVertex(0, 1, 1);
-				tess.addVertex(1, 1, 1);
-				tess.addVertex(1, 1, 0);
+				buffer.pos(0, 1, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(0, 1, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 1, 1).color(0f, 0.5f, 0f, 0.8f).endVertex();
+				buffer.pos(1, 1, 0).color(0f, 0.5f, 0f, 0.8f).endVertex();
 			}
 			{//Pos2
-				tess.setColorRGBA_F(0f, 0f, 0.5f, 0.8f);
+//				tess.setColorRGBA_F(0f, 0f, 0.5f, 0.8f);
 
-				tess.addVertex(xSize-1, ySize-1, zSize-1);
-				tess.addVertex(xSize-1, ySize, zSize-1);
-				tess.addVertex(xSize, ySize, zSize-1);
-				tess.addVertex(xSize, ySize-1, zSize-1);
+				buffer.pos(xSize-1, ySize-1, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize-1, ySize, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize-1, zSize-1).color(0f, 0f, 0.5f, 0.8f);
 
-				tess.addVertex(xSize-1, ySize-1, zSize-1);
-				tess.addVertex(xSize-1, ySize-1, zSize);
-				tess.addVertex(xSize-1, ySize, zSize);
-				tess.addVertex(xSize-1, ySize, zSize-1);
+				buffer.pos(xSize-1, ySize-1, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize-1, ySize-1, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize-1, ySize, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize-1, ySize, zSize-1).color(0f, 0f, 0.5f, 0.8f);
 
-				tess.addVertex(xSize, ySize-1, zSize-1);
-				tess.addVertex(xSize, ySize, zSize-1);
-				tess.addVertex(xSize, ySize, zSize);
-				tess.addVertex(xSize, ySize-1, zSize);
+				buffer.pos(xSize, ySize-1, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize-1, zSize).color(0f, 0f, 0.5f, 0.8f);
 
-				tess.addVertex(xSize-1, ySize-1, zSize);
-				tess.addVertex(xSize, ySize-1, zSize);
-				tess.addVertex(xSize, ySize, zSize);
-				tess.addVertex(xSize-1, ySize, zSize);
+				buffer.pos(xSize-1, ySize-1, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize-1, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize-1, ySize, zSize).color(0f, 0f, 0.5f, 0.8f);
 
-				tess.addVertex(xSize-1, ySize-1, zSize-1);
-				tess.addVertex(xSize, ySize-1, zSize-1);
-				tess.addVertex(xSize, ySize-1, zSize);
-				tess.addVertex(xSize-1, ySize-1, zSize);
+				buffer.pos(xSize-1, ySize-1, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize-1, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize-1, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize-1, ySize-1, zSize).color(0f, 0f, 0.5f, 0.8f);
 
-				tess.addVertex(xSize-1, ySize, zSize-1);
-				tess.addVertex(xSize-1, ySize, zSize);
-				tess.addVertex(xSize, ySize, zSize);
-				tess.addVertex(xSize, ySize, zSize-1);
+				buffer.pos(xSize-1, ySize, zSize-1).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize-1, ySize, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize, zSize).color(0f, 0f, 0.5f, 0.8f);
+				buffer.pos(xSize, ySize, zSize-1).color(0f, 0f, 0.5f, 0.8f);
 			}
 			tess.draw();
 
-			GL11.glPopMatrix();
-			GL11.glDepthMask(true);
-			GL11.glShadeModel(GL11.GL_FLAT);
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glEnable(GL11.GL_TEXTURE_2D);
-			GL11.glEnable(GL11.GL_ALPHA_TEST);
+			GlStateManager.popMatrix();
+			GlStateManager.depthMask(true);
+			GlStateManager.shadeModel(GL11.GL_FLAT);
+			GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+			GlStateManager.enableTexture2D();
+			GlStateManager.enableAlpha();
 		}
 	}
 }

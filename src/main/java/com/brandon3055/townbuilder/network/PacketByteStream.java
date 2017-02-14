@@ -1,10 +1,10 @@
 package com.brandon3055.townbuilder.network;
 
+import com.brandon3055.brandonscore.network.MessageHandlerWrapper;
 import com.brandon3055.townbuilder.schematics.FileHandler;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Created by Brandon on 2/03/2015.
@@ -41,11 +41,9 @@ public class PacketByteStream  implements IMessage {
 		buf.writeBytes(bytes);
 	}
 
-	public static class Handler implements IMessageHandler<PacketByteStream, IMessage>
-	{
+	public static class Handler extends MessageHandlerWrapper<PacketByteStream,IMessage> {
 		@Override
-		public IMessage onMessage(PacketByteStream message, MessageContext ctx)
-		{
+		public IMessage handleMessage(PacketByteStream message, MessageContext ctx) {
 			FileHandler.instance.receiveFile(message, ctx);
 			return null;
 		}

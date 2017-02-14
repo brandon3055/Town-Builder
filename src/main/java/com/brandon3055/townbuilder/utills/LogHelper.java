@@ -1,7 +1,7 @@
 package com.brandon3055.townbuilder.utills;
 
 import com.brandon3055.townbuilder.TownBuilder;
-import cpw.mods.fml.common.FMLLog;
+import net.minecraftforge.fml.common.FMLLog;
 import org.apache.logging.log4j.Level;
 
 /**

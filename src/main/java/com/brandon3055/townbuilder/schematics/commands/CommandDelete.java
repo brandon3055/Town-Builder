@@ -4,7 +4,7 @@ import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,15 +26,15 @@ public class CommandDelete implements ISubCommand
 	{
 		if (args.length < 2 || args.length > 2)
 		{
-			player.addChatMessage(new ChatComponentText("Usage: /tt-schematic delete <name> [Deletes the specified schematic]"));
+			player.addChatMessage(new TextComponentString("Usage: /tt-schematic delete <name> [Deletes the specified schematic]"));
 			return;
 		}else
 		{
 			if (SchematicHandler.getFile(args[1]) != null)
 			{
 				SchematicHandler.deleteCompoundFile(args[1]);
-				player.addChatMessage(new ChatComponentText(args[1] + " Deleted"));
-			}else player.addChatMessage(new ChatComponentText(args[1] + " Dose not exist"));
+				player.addChatMessage(new TextComponentString(args[1] + " Deleted"));
+			}else player.addChatMessage(new TextComponentString(args[1] + " Dose not exist"));
 		}
 	}
 
@@ -42,7 +42,7 @@ public class CommandDelete implements ISubCommand
 	@Override
 	public List<String> addTabCompletionOptions(ICommandSender sender, String[] args) {
 		if (args.length == 2) {
-			return CommandBase.getListOfStringsFromIterableMatchingLastWord(args, Arrays.asList(SchematicHandler.getSchematics()));
+			return CommandBase.getListOfStringsMatchingLastWord(args, Arrays.asList(SchematicHandler.getSchematics()));
 		}
 		return null;
 	}

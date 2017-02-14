@@ -6,9 +6,9 @@ import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.StringUtils;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +36,11 @@ public class CommandList implements ISubCommand
 		String names = "";
 		for (String s : SchematicHandler.getSchematics())
 		{
-			names = names + EnumChatFormatting.DARK_PURPLE + s + ", ";
+			names = names + TextFormatting.DARK_PURPLE + s + ", ";
 		}
 		if (StringUtils.isNullOrEmpty(names)) names = "[404] - No schematics found";
 
-		player.addChatMessage(new ChatComponentText(names));
+		player.addChatMessage(new TextComponentString(names));
 	}
 
 	@Override

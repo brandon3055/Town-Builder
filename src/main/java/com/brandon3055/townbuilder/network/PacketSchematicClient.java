@@ -1,12 +1,12 @@
 package com.brandon3055.townbuilder.network;
 
+import com.brandon3055.brandonscore.network.MessageHandlerWrapper;
 import com.brandon3055.townbuilder.TownBuilder;
 import com.brandon3055.townbuilder.schematics.commands.CommandCreate;
-import cpw.mods.fml.common.network.ByteBufUtils;
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import io.netty.buffer.ByteBuf;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * Created by Brandon on 26/02/2015.
@@ -33,9 +33,9 @@ public class PacketSchematicClient  implements IMessage {
 		ByteBufUtils.writeUTF8String(buf, fileName);
 	}
 
-	public static class Handler implements IMessageHandler<PacketSchematicClient, IMessage> {
+	public static class Handler extends MessageHandlerWrapper<PacketSchematicClient, IMessage> {
 		@Override
-		public IMessage onMessage(PacketSchematicClient message, MessageContext ctx) {
+		public IMessage handleMessage(PacketSchematicClient message, MessageContext ctx) {
 			CommandCreate.instance.handleCommand(TownBuilder.proxy.getClientPlayer(), new String[] {"create", message.fileName});
 			return null;
 		}

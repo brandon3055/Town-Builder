@@ -8,8 +8,8 @@ import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextFormatting;
 
 import java.util.List;
 
@@ -31,14 +31,14 @@ public class CommandSend implements ISubCommand {
 		{
 			if (SchematicHandler.getFile(args[1]) != null)
 			{
-				player.addChatComponentMessage(new ChatComponentText(args[1] + " Already exists on the server"));
+				player.addChatComponentMessage(new TextComponentString(args[1] + " Already exists on the server"));
 				return;
 			}
 			if (!FileHandler.instance.transferInProgress) {
 				FileHandler.instance.fileName = args[1];
 				TownBuilder.network.sendTo(new PacketFileTransfer(args[1], true, ConfigHandler.filePort), (EntityPlayerMP) player);
 			}
-			else player.addChatComponentMessage(new ChatComponentText(EnumChatFormatting.RED + "The server is already receiving a file"));
+			else player.addChatComponentMessage(new TextComponentString(TextFormatting.RED + "The server is already receiving a file"));
 		}
 	}
 

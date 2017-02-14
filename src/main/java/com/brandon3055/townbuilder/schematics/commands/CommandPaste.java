@@ -4,7 +4,7 @@ import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,13 +26,13 @@ public class CommandPaste implements ISubCommand
 	{
 		if (args.length < 2 || args.length > 3)
 		{
-			player.addChatMessage(new ChatComponentText("/tt-schematic paste <name> {-i} [Past the specified schematic at your coords. -i will make it ignore air]"));
+			player.addChatMessage(new TextComponentString("/tt-schematic paste <name> {-i} [Past the specified schematic at your coords. -i will make it ignore air]"));
 			return;
 		}else
 		{
 			if (SchematicHandler.getFile(args[1]) == null)
 			{
-				player.addChatMessage(new ChatComponentText(args[1] + " Dose not exist"));
+				player.addChatMessage(new TextComponentString(args[1] + " Dose not exist"));
 				return;
 			}else {
 				boolean ia = args.length == 3 && args[2].equals("-i");
@@ -44,7 +44,7 @@ public class CommandPaste implements ISubCommand
 				{
 					e.printStackTrace();
 				}
-				player.addChatMessage(new ChatComponentText(args[1] + " Successfully added to world"));
+				player.addChatMessage(new TextComponentString(args[1] + " Successfully added to world"));
 			}
 		}
 	}
@@ -53,7 +53,7 @@ public class CommandPaste implements ISubCommand
 	@Override
 	public List<String> addTabCompletionOptions(ICommandSender paramICommandSender, String[] args) {
 		if (args.length == 2) {
-			return CommandBase.getListOfStringsFromIterableMatchingLastWord(args, Arrays.asList(SchematicHandler.getSchematics()));
+			return CommandBase.getListOfStringsMatchingLastWord(args, Arrays.asList(SchematicHandler.getSchematics()));
 		}
 		return null;
 	}

@@ -1,14 +1,15 @@
 package com.brandon3055.townbuilder.schematics.commands;
 
-import com.brandon3055.townbuilder.ModBlocks;
+import codechicken.lib.raytracer.RayTracer;
+import com.brandon3055.townbuilder.TBFeatures;
 import com.brandon3055.townbuilder.schematics.SchematicHandler;
 import com.brandon3055.townbuilder.tileentity.TileStructureBuilder;
-import com.brandon3055.townbuilder.utills.Utills;
+import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.TextComponentString;
 
 import java.util.List;
 
@@ -29,20 +30,20 @@ public class CommandBlock implements ISubCommand
 	{
 		if (args.length < 2 || args.length > 4)
 		{
-			player.addChatMessage(new ChatComponentText("/tt-schematic block <function> [Used to interact with the structure builder block you are looking at]"));
+			player.addChatMessage(new TextComponentString("/tt-schematic block <function> [Used to interact with the structure builder block you are looking at]"));
 			return;
 		}else
 		{
-			MovingObjectPosition mop = Utills.raytraceFromEntity(player.worldObj, player, 50);
-			if (mop == null || mop.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || player.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ) != ModBlocks.structureBuilder)
+			RayTraceResult mop = RayTracer.retrace(player, 50);
+			if (mop == null || mop.typeOfHit != RayTraceResult.Type.BLOCK || player.worldObj.getBlockState(mop.getBlockPos()).getBlock() != TBFeatures.structureBuilder)
 			{
-				player.addChatMessage(new ChatComponentText("Did not find Structure Builder! [you must be looking at a structure builder block to use this command]"));
+				player.addChatMessage(new TextComponentString("Did not find Structure Builder! [you must be looking at a structure builder block to use this command]"));
 				return;
 			}
-			TileStructureBuilder tile = player.worldObj.getTileEntity(mop.blockX, mop.blockY, mop.blockZ) instanceof TileStructureBuilder ? (TileStructureBuilder) player.worldObj.getTileEntity(mop.blockX, mop.blockY, mop.blockZ) : null;
+			TileStructureBuilder tile = player.worldObj.getTileEntity(mop.getBlockPos()) instanceof TileStructureBuilder ? (TileStructureBuilder) player.worldObj.getTileEntity(mop.getBlockPos()) : null;
 			if (tile == null)
 			{
-				player.addChatMessage(new ChatComponentText("[ERROR 404] Block tile entity not found"));
+				player.addChatMessage(new TextComponentString("[ERROR 404] Block tile entity not found"));
 				return;
 			}
 
@@ -50,13 +51,13 @@ public class CommandBlock implements ISubCommand
 			{
 				if (args.length != 3)
 				{
-					player.addChatMessage(new ChatComponentText("/tt-schematic block set <schematic name>"));
+					player.addChatMessage(new TextComponentString("/tt-schematic block set <schematic name>"));
 					return;
 				}
 
 				if ( SchematicHandler.getFile(args[2]) == null)
 				{
-					player.addChatMessage(new ChatComponentText(args[2] + " Dose not exist"));
+					player.addChatMessage(new TextComponentString(args[2] + " Dose not exist"));
 					return;
 				}
 				NBTTagCompound compound = null;
@@ -68,25 +69,25 @@ public class CommandBlock implements ISubCommand
 				{
 					e.printStackTrace();
 				}
-				tile.schematic = args[2];
-				tile.xSize = compound.getShort("Width");
-				tile.ySize = compound.getShort("Height");
-				tile.zSize = compound.getShort("Length");
-				player.addChatMessage(new ChatComponentText(args[2] + " Bound to block"));
-				player.worldObj.markBlockForUpdate(mop.blockX, mop.blockY, mop.blockZ);
+				tile.schematic.value = args[2];
+				tile.xSize.value = compound.getShort("Width");
+				tile.ySize.value = compound.getShort("Height");
+				tile.zSize.value = compound.getShort("Length");
+				player.addChatMessage(new TextComponentString(args[2] + " Bound to block"));
+//				player.worldObj.markBlockForUpdate(mop.blockX, mop.blockY, mop.blockZ);
 			}
 			else if (args[1].equals("toggleview"))
 			{
-				tile.showPosition = !tile.showPosition;
-				player.worldObj.markBlockForUpdate(mop.blockX, mop.blockY, mop.blockZ);
+				tile.showPosition.value = !tile.showPosition.value;
+//				player.worldObj.markBlockForUpdate(mop.blockX, mop.blockY, mop.blockZ);
 			}
-
+			tile.updateBlock();
 		}
 	}
 
 	@Override
-	public List<String> addTabCompletionOptions(ICommandSender paramICommandSender, String[] paramArrayOfString) {
-		return null;
+	public List<String> addTabCompletionOptions(ICommandSender paramICommandSender, String[] args) {
+		return CommandBase.getListOfStringsMatchingLastWord(args, "set", "toggleview");
 	}
 
 	@Override
