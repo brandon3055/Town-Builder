@@ -11,24 +11,21 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
  * Created by Brandon on 25/02/2015.
  */
 public class PacketClientList implements IMessage {
-	@Override
-	public void fromBytes(ByteBuf buf)
-	{
+    @Override
+    public void fromBytes(ByteBuf buf) {
 
-	}
+    }
 
-	@Override
-	public void toBytes(ByteBuf buf)
-	{
+    @Override
+    public void toBytes(ByteBuf buf) {
 
-	}
+    }
 
-	public static class Handler extends MessageHandlerWrapper<PacketClientList, IMessage>
-	{
-		@Override
-		public IMessage handleMessage(PacketClientList message, MessageContext ctx) {
-			CommandList.instance.handleCommand(TownBuilder.proxy.getClientPlayer(), null);
-			return null;
-		}
-	}
+    public static class Handler extends MessageHandlerWrapper<PacketClientList, IMessage> {
+        @Override
+        public IMessage handleMessage(PacketClientList message, MessageContext ctx) {
+            CommandList.instance.handleCommand(TownBuilder.proxy.getClientPlayer(), null);
+            return null;
+        }
+    }
 }

@@ -1,9 +1,9 @@
 package com.brandon3055.townbuilder.tileentity;
 
 import com.brandon3055.brandonscore.blocks.TileBCBase;
-import com.brandon3055.brandonscore.network.wrappers.SyncableBool;
-import com.brandon3055.brandonscore.network.wrappers.SyncableInt;
-import com.brandon3055.brandonscore.network.wrappers.SyncableString;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedBool;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedInt;
+import com.brandon3055.brandonscore.lib.datamanager.ManagedString;
 import net.minecraft.util.math.AxisAlignedBB;
 
 /**
@@ -11,43 +11,29 @@ import net.minecraft.util.math.AxisAlignedBB;
  */
 public class TileStructureBuilder extends TileBCBase {
 
-	public SyncableString schematic = new SyncableString("", true, false);
-	public SyncableBool showPosition = new SyncableBool(false, true, false);
-	public SyncableBool copyAir = new SyncableBool(false, true, false);
-	public SyncableInt xOffset = new SyncableInt(0, true, false);
-	public SyncableInt yOffset = new SyncableInt(0, true, false);
-	public SyncableInt zOffset = new SyncableInt(0, true, false);
+    public ManagedString schematic = register("schematic", new ManagedString("")).saveToTile().syncViaTile().finish();
+    public ManagedBool showPosition = register("showPosition", new ManagedBool(false)).saveToTile().syncViaTile().finish();
+    public ManagedBool copyAir = register("copyAir", new ManagedBool(false)).saveToTile().syncViaTile().finish();
+    public ManagedInt xOffset = register("xOffset", new ManagedInt(0)).saveToTile().syncViaTile().finish();
+    public ManagedInt yOffset = register("yOffset", new ManagedInt(0)).saveToTile().syncViaTile().finish();
+    public ManagedInt zOffset = register("zOffset", new ManagedInt(0)).saveToTile().syncViaTile().finish();
 
-	public SyncableInt xSize = new SyncableInt(-1, true, false);
-	public SyncableInt ySize = new SyncableInt(-1, true, false);
-	public SyncableInt zSize = new SyncableInt(-1, true, false);
+    public ManagedInt xSize = register("xSize", new ManagedInt(-1)).saveToTile().syncViaTile().finish();
+    public ManagedInt ySize = register("ySize", new ManagedInt(-1)).saveToTile().syncViaTile().finish();
+    public ManagedInt zSize = register("zSize", new ManagedInt(-1)).saveToTile().syncViaTile().finish();
 
-	public SyncableInt signRotation = new SyncableInt(0, true, false);
+    public ManagedInt signRotation = register("signRotation", new ManagedInt(0)).saveToTile().syncViaTile().finish();
 
-	public SyncableInt keyCode = new SyncableInt(0, true, false);
+    public ManagedInt keyCode = register("keyCode", new ManagedInt(0)).saveToTile().syncViaTile().finish();
 
-	public TileStructureBuilder() {
-		registerSyncableObject(schematic);
-		registerSyncableObject(showPosition);
-		registerSyncableObject(copyAir);
-		registerSyncableObject(xOffset);
-		registerSyncableObject(yOffset);
-		registerSyncableObject(zOffset);
-		registerSyncableObject(xSize);
-		registerSyncableObject(ySize);
-		registerSyncableObject(zSize);
-		registerSyncableObject(signRotation);
-		registerSyncableObject(keyCode);
-	}
+    @Override
+    public void updateBlock() {
+        super.updateBlock();
+        dataManager.detectAndSendChanges();
+    }
 
-	@Override
-	public void updateBlock() {
-		super.updateBlock();
-		detectAndSendChanges();
-	}
-
-	@Override
-	public AxisAlignedBB getRenderBoundingBox() {
-		return INFINITE_EXTENT_AABB;
-	}
+    @Override
+    public AxisAlignedBB getRenderBoundingBox() {
+        return INFINITE_EXTENT_AABB;
+    }
 }

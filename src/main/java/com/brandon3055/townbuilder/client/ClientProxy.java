@@ -1,7 +1,6 @@
 package com.brandon3055.townbuilder.client;
 
 import com.brandon3055.townbuilder.CommonProxy;
-import com.brandon3055.townbuilder.TownBuilder;
 import com.brandon3055.townbuilder.client.rendering.RenderTileStructureBuilder;
 import com.brandon3055.townbuilder.tileentity.TileStructureBuilder;
 import net.minecraft.client.Minecraft;
@@ -14,36 +13,33 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
  */
 public class ClientProxy extends CommonProxy {
 
-	@Override
-	public void registerRendering() {
-		ClientRegistry.bindTileEntitySpecialRenderer(TileStructureBuilder.class, new RenderTileStructureBuilder());
-		TownBuilder.featureParser.registerRendering();
-	}
+    @Override
+    public void registerRendering() {
+    }
 
-	@Override
-	public void registerListeners() {
-		super.registerListeners();
-		MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
-	}
+    @Override
+    public void registerListeners() {
+        super.registerListeners();
+        MinecraftForge.EVENT_BUS.register(new ClientEventHandler());
+    }
 
 
-	public boolean isOp(String paramString)
-	{
-		return Minecraft.getMinecraft().theWorld.getWorldInfo().getGameType().isCreative();
-	}
+    public boolean isOp(String paramString) {
+        return Minecraft.getMinecraft().world.getWorldInfo().getGameType().isCreative();
+    }
 
-	@Override
-	public boolean isDedicatedServer() {
-		return false;
-	}
+    @Override
+    public boolean isDedicatedServer() {
+        return false;
+    }
 
-	@Override
-	public EntityPlayer getClientPlayer() {
-		return Minecraft.getMinecraft().thePlayer;
-	}
+    @Override
+    public EntityPlayer getClientPlayer() {
+        return Minecraft.getMinecraft().player;
+    }
 
-	@Override
-	public void registerServerListeners() {
+    @Override
+    public void registerServerListeners() {
 
-	}
+    }
 }

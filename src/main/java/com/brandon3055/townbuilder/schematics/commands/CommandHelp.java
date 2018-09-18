@@ -11,58 +11,51 @@ import java.util.List;
 /**
  * Created by Brandon on 25/02/2015.
  */
-public class CommandHelp implements ISubCommand
-{
-	public static CommandHelp instance = new CommandHelp();
+public class CommandHelp implements ISubCommand {
+    public static CommandHelp instance = new CommandHelp();
 
-	@Override
-	public String getCommandName() {
-		return "help";
-	}
+    @Override
+    public String getCommandName() {
+        return "help";
+    }
 
-	@Override
-	public void handleCommand(EntityPlayer player, String[] args)
-	{
-		if (args.length == 2 && CommandHandler.commands.containsKey(args[1]))
-		{
-			for (int i = 0; i < CommandHandler.commands.get(args[1]).helpInfo(player).length; i++)
-			{
-				if (i > 0) player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + CommandHandler.commands.get(args[1]).helpInfo(player)[i]));
-				else  player.addChatComponentMessage(new TextComponentString(CommandHandler.commands.get(args[1]).helpInfo(player)[i]));
-			}
-			return;
-		}
-		player.addChatComponentMessage(new TextComponentString("Usage: /tt-schematic help <command>"));
-		player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + "Commands:"));
-		player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + "-create"));
-		player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + "-delete"));
-		player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + "-list"));
-		player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + "-paste"));
-		player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + "-block"));
-		player.addChatComponentMessage(new TextComponentString(TextFormatting.GRAY + "-uploadtoserver"));
+    @Override
+    public void handleCommand(EntityPlayer player, String[] args) {
+        if (args.length == 2 && CommandHandler.commands.containsKey(args[1])) {
+            for (int i = 0; i < CommandHandler.commands.get(args[1]).helpInfo(player).length; i++) {
+                if (i > 0)
+                    player.sendMessage(new TextComponentString(TextFormatting.GRAY + CommandHandler.commands.get(args[1]).helpInfo(player)[i]));
+                else
+                    player.sendMessage(new TextComponentString(CommandHandler.commands.get(args[1]).helpInfo(player)[i]));
+            }
+            return;
+        }
+        player.sendMessage(new TextComponentString("Usage: /tbuilder help <command>"));
+        player.sendMessage(new TextComponentString(TextFormatting.GRAY + "Commands:"));
+        player.sendMessage(new TextComponentString(TextFormatting.GRAY + "-create"));
+        player.sendMessage(new TextComponentString(TextFormatting.GRAY + "-delete"));
+        player.sendMessage(new TextComponentString(TextFormatting.GRAY + "-list"));
+        player.sendMessage(new TextComponentString(TextFormatting.GRAY + "-paste"));
+        player.sendMessage(new TextComponentString(TextFormatting.GRAY + "-block"));
+        player.sendMessage(new TextComponentString(TextFormatting.GRAY + "-uploadtoserver"));
 
-	}
+    }
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public List<String> addTabCompletionOptions(ICommandSender paramICommandSender, String[] paramArrayOfString) {
-		return CommandBase.getListOfStringsMatchingLastWord(paramArrayOfString, CommandHandler.commands.keySet());
-	}
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<String> addTabCompletionOptions(ICommandSender paramICommandSender, String[] paramArrayOfString) {
+        return CommandBase.getListOfStringsMatchingLastWord(paramArrayOfString, CommandHandler.commands.keySet());
+    }
 
-	@Override
-	public boolean canSenderUseCommand(ICommandSender sender) {
-		return CommandHandler.checkOpAndNotify(sender);
-	}
+    @Override
+    public boolean canSenderUseCommand(ICommandSender sender) {
+        return CommandHandler.checkOpAndNotify(sender);
+    }
 
-	@Override
-	public String[] helpInfo(EntityPlayer sender) {
-		return new String[]
-		{
-			"Usage: /tt-schematic help <command>",
-			"",
-			"Gives information about the usage of the given command"
-		};
-	}
+    @Override
+    public String[] helpInfo(EntityPlayer sender) {
+        return new String[]{"Usage: /tt-schematic help <command>", "", "Gives information about the usage of the given command"};
+    }
 	/*
 
 	if (args.length == 1)

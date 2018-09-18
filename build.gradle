@@ -7,7 +7,7 @@ buildscript {
         }
     }
     dependencies {
-        classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
+        classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
@@ -16,16 +16,16 @@ apply plugin: 'maven-publish'
 
 repositories {
     maven {
-        name 'Covers1624 maven'
-        url "http://adel.podgeweb.com:1616/maven/"
+        name = "CoFH Maven"
+        url = "http://maven.covers1624.net"
     }
     maven {
-        name 'Covers1624 maven'
-        url "http://172.17.5.4:1616/maven/"
-    }
-    maven {
-        name 'CB Maven'
+        name 'CB Maven FS'
         url "http://chickenbones.net/maven/"
+    }
+    maven {
+        name "JEI Maven."
+        url "http://dvs1.progwml6.com/files/maven"
     }
 }
 
@@ -40,11 +40,11 @@ configFile.withReader {
 }
 
 version = "${config.mcversion}-${config.mod_version}"
-group= "com.brandon3055.townbuilder"
+group = "com.brandon3055.townbuilder"
 archivesBaseName = "TownBuilder"
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
 
 minecraft {
     version = config.mcversion + "-" + config.forge_version
@@ -55,11 +55,11 @@ minecraft {
     makeObfSourceJar = false
 }
 
-String buildNo = "1"
-if (System.getenv("BUILD_NUMBER") != null) {
-    buildNo = System.getenv("BUILD_NUMBER")
-}
-version = version + ".${buildNo}"
+//String buildNo = "1"
+//if (System.getenv("BUILD_NUMBER") != null) {
+//    buildNo = System.getenv("BUILD_NUMBER")
+//}
+//version = version + ".${buildNo}"
 
 dependencies {
     compile "com.brandon3055.brandonscore:BrandonsCore:${config.mcversion}-${config.bcore_version}:deobf"
@@ -67,24 +67,24 @@ dependencies {
 }
 
 processResources
-{
-    // this will ensure that this task is redone when the versions change.
-    inputs.property "version", project.version
-    inputs.property "mcversion", project.minecraft.version
+        {
+            // this will ensure that this task is redone when the versions change.
+            inputs.property "version", project.version
+            inputs.property "mcversion", project.minecraft.version
 
-    // replace stuff in mcmod.info, nothing else
-    from(sourceSets.main.resources.srcDirs) {
-        include 'mcmod.info'
-                
-        // replace version and mcversion
-        expand 'version':project.version, 'mcversion':project.minecraft.version
-    }
-        
-    // copy everything else, thats not the mcmod.info
-    from(sourceSets.main.resources.srcDirs) {
-        exclude 'mcmod.info'
-    }
-}
+            // replace stuff in mcmod.info, nothing else
+            from(sourceSets.main.resources.srcDirs) {
+                include 'mcmod.info'
+
+                // replace version and mcversion
+                expand 'version': project.version, 'mcversion': project.minecraft.version
+            }
+
+            // copy everything else, thats not the mcmod.info
+            from(sourceSets.main.resources.srcDirs) {
+                exclude 'mcmod.info'
+            }
+        }
 
 def commonManifest = {
 //    attributes 'FMLAT': 'DraconicEvolution_at.cfg'

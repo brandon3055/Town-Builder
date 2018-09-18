@@ -118,7 +118,7 @@ public class SchematicHandler {
         if (nbtBase.getId() != 0) {
             dataOutput.writeUTF("Schematic");
             try {
-                ReflectionHelper.findMethod(NBTBase.class, nbtBase, new String[]{"write", "func_74734_a"}, DataOutput.class).invoke(nbtBase, dataOutput);
+                ReflectionHelper.findMethod(NBTBase.class, "write", "func_74734_a", DataOutput.class).invoke(nbtBase, dataOutput);
             }
             catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -193,7 +193,8 @@ public class SchematicHandler {
 
                     blocksCopied++;
 
-                    if (width > 1 && height > 1 && length > 1 && blocksCopied % i == 0) LogHelper.info("Progress: " + (((double) blocksCopied / (double) totalBlocks) * 100D) + "%%");
+                    if (width > 1 && height > 1 && length > 1 && blocksCopied % i == 0)
+                        LogHelper.info("Progress: " + (((double) blocksCopied / (double) totalBlocks) * 100D) + "%%");
                 }
             }
         }
@@ -206,7 +207,6 @@ public class SchematicHandler {
 
         return compound;
     }
-
 
     public static void loadAreaFromCompound(NBTTagCompound compound, World world, int posX, int posY, int posZ, boolean copyAir) throws SchematicException {
         if (compound != null && compound.hasKey("UseOldLoader")) {
@@ -306,125 +306,14 @@ public class SchematicHandler {
 
                     blocksCopied++;
 
-                    if (width > 1 && height > 1 && length > 1 && blocksCopied % ii == 0) LogHelper.info("Progress: " + (((double) blocksCopied / (double) totalBlocks) * 100D) + "%%");
+                    if (width > 1 && height > 1 && length > 1 && blocksCopied % ii == 0)
+                        LogHelper.info("Progress: " + (((double) blocksCopied / (double) totalBlocks) * 100D) + "%%");
                 }
             }
         }
 
 
     }
-
-//    public static void loadAreaFromCompoundOld(NBTTagCompound compound, World world, int x, int y, int z, boolean copyAir) {
-//        int xSize = compound.getShort("Width");
-//        int ySize = compound.getShort("Height");
-//        int zSize = compound.getShort("Length");
-//
-//        boolean isVanillaSchematic = compound.hasKey("Data") && compound.hasKey("Blocks") && compound.hasKey("Materials");
-//
-//        NBTTagCompound idNameConversion = compound.getCompoundTag("idConversions");
-//
-//        NBTTagList tileList = compound.getTagList("TileEntities", 10);
-//
-//        Map<Integer, Block> blockMap = new HashMap<Integer, Block>();
-//
-//        int[] ids = new int[0];
-//        byte[] blocks = new byte[0];
-//        byte[] addblocks = new byte[0];
-//        boolean hasAdditionalBlocks = false;
-//        if (!isVanillaSchematic) {
-//            ids = compound.getIntArray("Ids");
-//            if (ids.length < xSize * ySize + zSize) {
-//                LogHelper.error("invalid id array " + ids.length);
-//                return;
-//            }
-//        }
-//        else {
-//            blocks = compound.getByteArray("Blocks");
-//            if (blocks.length < xSize * ySize + zSize) {
-//                LogHelper.error("invalid block array " + blocks.length);
-//                return;
-//            }
-//            if (compound.hasKey("AddBlocks")) {
-//                hasAdditionalBlocks = true;
-//                addblocks = compound.getByteArray("AddBlocks");
-//                if (addblocks.length < xSize * ySize + zSize) {
-//                    LogHelper.error("invalid additional blocks array " + addblocks.length);
-//                    return;
-//                }
-//            }
-//        }
-//
-//
-//        byte[] metta = new byte[0];
-//        if (isVanillaSchematic) metta = compound.getByteArray("Data");
-//        else metta = compound.getByteArray("Metta");
-//
-//        if (metta.length < xSize * ySize + zSize) {
-//            LogHelper.error("invalid metta array " + metta.length);
-//            return;
-//        }
-//
-//        int totalBlocks = xSize * ySize * zSize;
-//
-//        LogHelper.info("Pasting schematic containing " + totalBlocks + " Blocks");
-//
-//        int ii = totalBlocks / 10;
-//        int blocksCopied = 0;
-//
-//        for (int ry = 0; ry < ySize; ry++) {
-//            for (int rz = 0; rz < zSize; rz++) {
-//                for (int rx = 0; rx < xSize; rx++) {
-//                    BlockPos pos = new BlockPos(rx + x, ry + y, rz + z);
-//                    int id = 0;
-//                    if (isVanillaSchematic) {
-//                        id = blocks[(ry * zSize + rz) * xSize + rx] + (hasAdditionalBlocks ? addblocks[(ry * zSize + rz) * xSize + rx] : 0);
-//                    }
-//                    else id = ids[(ry * zSize + rz) * xSize + rx];
-//
-//                    if (!blockMap.containsKey(id)) {
-//                        if (!isVanillaSchematic && GameData.getBlockRegistry().getObject(idNameConversion.getString(String.valueOf(id))) != null) {
-//                            blockMap.put(id, GameData.getBlockRegistry().getObject(idNameConversion.getString(String.valueOf(id))));
-//                        }
-//                        else if (isVanillaSchematic) {
-//                            blockMap.put(id, Block.getBlockById(id));
-//                        }
-//                        else continue;
-//                    }
-//
-//                    if (!copyAir && id == 0) continue;
-//
-//
-//                    Chunk chunk = world.getChunkFromBlockCoords(x + rx, z + rz);
-//
-//                    if (chunk.getTileEntityUnsafe((x + rx) & 15, (y + ry), (z + rz) & 15) != null) {
-//                        chunk.getTileEntityUnsafe((x + rx) & 15, (y + ry), (z + rz) & 15).invalidate();
-//                    }
-//                    chunk.removeInvalidTileEntity((x + rx) & 15, (y + ry), (z + rz) & 15);
-//
-//                    chunk.func_150807_a((x + rx) & 15, (y + ry), (z + rz) & 15, blockMap.get(id), metta[(ry * zSize + rz) * xSize + rx]);
-//                    chunk.setBlockMetadata((x + rx) & 15, (y + ry), (z + rz) & 15, metta[(ry * zSize + rz) * xSize + rx]);
-//                    world.markBlockForUpdate(x + rx, y + ry, z + rz);
-//
-//                    if (world.getTileEntity(x + rx, y + ry, z + rz) != null) {
-//                        TileEntity tile = world.getTileEntity(x + rx, y + ry, z + rz);
-//                        if (tileList != null) for (int i = 0; i < tileList.tagCount(); i++) {
-//                            if (tileList.getCompoundTagAt(i).getInteger("x") == rx && tileList.getCompoundTagAt(i).getInteger("y") == ry && tileList.getCompoundTagAt(i).getInteger("z") == rz) {
-//                                tile.readFromNBT(tileList.getCompoundTagAt(i));
-//                            }
-//                        }
-//                        tile.xCoord = x + rx;
-//                        tile.yCoord = y + ry;
-//                        tile.zCoord = z + rz;
-//                    }
-//
-//
-//                    blocksCopied++;
-//
-//                    if (xSize > 1 && ySize > 1 && zSize > 1 && blocksCopied % ii == 0) LogHelper.info("Progress: " + (((double) blocksCopied / (double) totalBlocks) * 100D) + "%%");
-//                }
-//            }
-//        }
-//    }
 
     public static String[] getSchematics() {
         String[] s = SchematicHandler.getSaveFolder().list();

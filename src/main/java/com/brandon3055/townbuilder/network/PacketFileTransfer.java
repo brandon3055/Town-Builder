@@ -53,14 +53,15 @@ public class PacketFileTransfer implements IMessage {
         public IMessage handleMessage(PacketFileTransfer message, MessageContext ctx) {
             if (ctx.side == Side.CLIENT) {
                 if (SchematicHandler.getFile(message.fileName) != null) {
-                    TownBuilder.proxy.getClientPlayer().addChatComponentMessage(new TextComponentString(TextFormatting.DARK_GREEN + "[CLIENT] Sending File"));
+                    TownBuilder.proxy.getClientPlayer().sendMessage(new TextComponentString(TextFormatting.DARK_GREEN + "[CLIENT] Sending File"));
                     FileHandler.instance.sendFileToServer(message.fileName);
                     return new PacketFileTransfer(message.fileName, true);
                 }
                 else return new PacketFileTransfer(message.fileName, false);
             }
             else {
-                if (!message.transferValid) ctx.getServerHandler().playerEntity.addChatComponentMessage(new TextComponentString("That file dose not exist on your client"));
+                if (!message.transferValid)
+                    ctx.getServerHandler().player.sendMessage(new TextComponentString("That file dose not exist on your client"));
             }
             return null;
         }

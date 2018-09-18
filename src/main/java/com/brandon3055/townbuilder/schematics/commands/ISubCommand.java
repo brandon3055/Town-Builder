@@ -8,16 +8,15 @@ import java.util.List;
 /**
  * Created by Brandon on 25/02/2015.
  */
-public abstract interface ISubCommand
-{
-	public abstract String getCommandName();
+public abstract interface ISubCommand {
+    public abstract String getCommandName();
 
-	public abstract void handleCommand(EntityPlayer player, String[] args);
+    public abstract void handleCommand(EntityPlayer player, String[] args);
 
-	public abstract List<String> addTabCompletionOptions(ICommandSender paramICommandSender, String[] paramArrayOfString);
+    public abstract List<String> addTabCompletionOptions(ICommandSender paramICommandSender, String[] paramArrayOfString);
 
-	public abstract boolean canSenderUseCommand(ICommandSender sender);
+    public abstract boolean canSenderUseCommand(ICommandSender sender);
 
-	public abstract String[] helpInfo(EntityPlayer sender);
+    public abstract String[] helpInfo(EntityPlayer sender);
 }
 

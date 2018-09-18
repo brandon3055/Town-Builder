@@ -8,9 +8,9 @@
     "transform": "forge:default-item"
   },
   "variants": {
-    "type":{
-      "house_key": { "textures": { "layer0": "townbuilder:items/house_key"  } },
-      "schematic_tool":{ "textures": { "layer0": "townbuilder:items/schematic_tool" } }
+    "type": {
+      "house_key": {"textures": {"layer0": "townbuilder:items/house_key"}},
+      "schematic_tool": {"textures": {"layer0": "townbuilder:items/schematic_tool"}}
     },
     "normal": [{}]
   }
